@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -29,9 +30,13 @@ export default function UcarSidebar() {
     <aside className="flex h-full w-64 flex-col border-r border-slate-200 bg-[#F7F6F3] shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-200">
-        <div className="h-10 w-10 rounded-lg bg-[#003850] flex items-center justify-center shrink-0">
-          <span className="text-white text-sm font-black tracking-tight">UC</span>
-        </div>
+        <Image
+          src="/ucar-logo.png"
+          alt="UCAR Logo"
+          width={80}
+          height={60}
+          className="rounded-lg shrink-0"
+        />
         <div>
           <p className="text-base font-black text-[#1B4F6B] leading-tight">UCAR Admin</p>
           <p className="text-xs text-slate-500 mt-0.5">Portail de gestion</p>
