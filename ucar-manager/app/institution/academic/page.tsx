@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireInstitutionRole } from "@/lib/auth/guards";
 import { getAcademicKpis } from "@/lib/data/academic";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
@@ -46,5 +47,28 @@ export default async function InstitutionAcademicDashboard() {
     },
   ];
 
-  return <DomainDashboardPage {...base} kpis={kpis} />;
+  return (
+    <>
+      <DomainDashboardPage {...base} kpis={kpis} />
+      <div className="mx-auto max-w-7xl px-8 pb-8 -mt-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            { label: "Étudiants", href: "/institution/academic/students" },
+            { label: "Cours", href: "/institution/academic/courses" },
+            { label: "Assiduité", href: "/institution/academic/attendance" },
+            { label: "Examens", href: "/institution/academic/exams" },
+          ].map(({ label, href }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center justify-between rounded-sm border border-[#003850]/10 bg-white px-4 py-3 text-sm font-medium text-[#1B1C1A] transition-colors hover:border-[#003850]/30 hover:bg-[#003850]/5"
+            >
+              {label}
+              <span className="text-slate-400">→</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </>
+  );
 }
