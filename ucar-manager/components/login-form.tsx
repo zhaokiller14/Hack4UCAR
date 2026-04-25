@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function getLoginErrorMessage(error: unknown) {
   if (error && typeof error === "object" && "message" in error) {
@@ -44,7 +45,7 @@ export function LoginForm({
 
     supabase.auth.getSession().then(({ data }) => {
       if (isMounted && data.session) {
-        router.replace("/");
+        router.replace("/ucar/dashboard");
       }
     });
 
@@ -52,7 +53,7 @@ export function LoginForm({
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        router.replace("/");
+        router.replace("/ucar/dashboard");
       }
     });
 
@@ -74,9 +75,13 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      router.replace("/");
+      console.log("Login successful", { email });
+      toast.success("Connexion reussie.");
+      router.replace("/ucar/dashboard");
     } catch (error: unknown) {
-      setError(getLoginErrorMessage(error));
+      const message = getLoginErrorMessage(error);
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

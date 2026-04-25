@@ -49,7 +49,7 @@ export function SignUpForm({
 
     supabase.auth.getSession().then(({ data }) => {
       if (isMounted && data.session) {
-        router.replace("/");
+        router.replace("/ucar/dashboard");
       }
     });
 
@@ -57,7 +57,7 @@ export function SignUpForm({
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        router.replace("/");
+        router.replace("/ucar/dashboard");
       }
     });
 
@@ -84,11 +84,11 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}/ucar/dashboard`,
         },
       });
       if (error) throw error;
-      router.replace("/");
+      router.replace("/ucar/dashboard");
     } catch (error: unknown) {
       setError(getSignUpErrorMessage(error));
     } finally {

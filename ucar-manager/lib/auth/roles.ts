@@ -7,6 +7,8 @@ export const APP_ROLES = [
   "research_manager",
   "partnerships_manager",
   "esg_manager",
+  "infrastructure_manager",
+  "viewer",
 ] as const;
 
 export type AppRole = (typeof APP_ROLES)[number];
@@ -19,6 +21,8 @@ export const INSTITUTION_ROLES = [
   "research_manager",
   "partnerships_manager",
   "esg_manager",
+  "infrastructure_manager",
+  "viewer",
 ] as const;
 
 export type InstitutionRole = (typeof INSTITUTION_ROLES)[number];

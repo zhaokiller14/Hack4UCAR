@@ -112,6 +112,44 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  const isSuperAdminPath = pathname.startsWith("/super-admin");
+  const isAdminPath = pathname.startsWith("/admin");
+
+  if (user && (isSuperAdminPath || isAdminPath)) {
+    let operatorRole: string | null = null;
+
+    const userId = user?.id; // Depending on how your Supabase auth is set up, the user ID might be in `sub` or `id`
+
+    if (userId) {
+      const { data: usersRow } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", userId)
+        .maybeSingle();
+
+      operatorRole = usersRow?.role ?? null;
+
+      if (!operatorRole) {
+        const { data: profilesRow } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", userId)
+          .maybeSingle();
+
+        operatorRole = profilesRow?.role ?? null;
+      }
+    }
+
+    if (
+      (isSuperAdminPath && operatorRole !== "super_admin") ||
+      (isAdminPath && operatorRole !== "org_admin")
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/forbidden";
+      return NextResponse.redirect(url);
+    }
+  }
+
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:

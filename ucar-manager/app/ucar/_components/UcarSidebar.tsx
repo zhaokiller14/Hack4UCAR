@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Building2,
@@ -13,6 +13,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
   { href: "/ucar/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
@@ -25,6 +26,14 @@ const NAV = [
 
 export default function UcarSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.replace("/auth/login");
+    router.refresh();
+  };
 
   return (
     <aside className="flex h-full w-64 flex-col border-r border-slate-200 bg-[#F7F6F3] shrink-0">
@@ -67,13 +76,14 @@ export default function UcarSidebar() {
 
       {/* Footer */}
       <div className="px-3 pb-5 border-t border-slate-200 pt-3">
-        <Link
-          href="/auth/login"
+        <button
+          type="button"
+          onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 border-l-4 border-transparent hover:text-[#1B4F6B] hover:bg-white/60 transition-all"
         >
           <LogOut className="h-4 w-4 shrink-0" />
           Déconnexion
-        </Link>
+        </button>
       </div>
     </aside>
   );
