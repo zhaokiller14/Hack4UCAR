@@ -164,10 +164,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard ressources humaines",
     subtitle: "Pilotage des effectifs, charges et stabilite",
     kpis: [
-      { title: "Effectif total", value: "624", delta: "+12", accentColor: "#1B4F6B" },
-      { title: "Absenteisme", value: "7.1%", delta: "-0.8%", accentColor: "#2E7D32" },
-      { title: "Formations completees", value: "71%", delta: "+5.2%", accentColor: "#2E7D32" },
-      { title: "Charge enseignement", value: "15.6 h", delta: "+0.3", accentColor: "#C8A74B" },
+      { title: "Effectif total", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Absentéisme", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Charge enseignement moy.", value: "—", delta: "—", accentColor: "#C8A74B" },
+      { title: "Personnel recherche", value: "—", delta: "—", accentColor: "#1B4F6B" },
     ],
     alerts: [
       { id: "a1", metric: "Surcharge enseignante", detail: "3 departements depassent 18h hebdomadaires en moyenne.", severity: "high" },
