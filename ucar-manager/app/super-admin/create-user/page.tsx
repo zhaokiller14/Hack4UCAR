@@ -5,7 +5,7 @@ import { createInstitutionUser, getUserCreationFormData } from '@/app/actions/cr
 
 type Role =
   | 'super_admin'
-  | 'org_admin'
+  | 'institution_admin'
   | 'finance_manager'
   | 'hr_manager'
   | 'academic_manager'
@@ -20,7 +20,7 @@ type Institution = { id: string; name: string; organization_id: string }
 
 const ROLE_LABELS: Record<Role, string> = {
   super_admin: 'Super Admin',
-  org_admin: 'Organization Admin',
+  institution_admin: 'Institution Admin',
   finance_manager: 'Finance Manager',
   hr_manager: 'HR Manager',
   academic_manager: 'Academic Manager',
