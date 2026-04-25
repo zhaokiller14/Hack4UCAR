@@ -1,11 +1,23 @@
+import { Suspense } from "react";
+
 import { requireInstitutionRole } from "@/lib/auth/guards";
+
+async function InstitutionAccessGate() {
+  await requireInstitutionRole();
+  return null;
+}
 
 export default async function InstitutionLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
-	await requireInstitutionRole();
-
-	return <section>{children}</section>;
+	return (
+		<section>
+			<Suspense fallback={null}>
+				<InstitutionAccessGate />
+			</Suspense>
+			{children}
+		</section>
+	);
 }

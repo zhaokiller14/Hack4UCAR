@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function getLoginErrorMessage(error: unknown) {
   if (error && typeof error === "object" && "message" in error) {
@@ -74,9 +75,13 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
+      console.log("Login successful", { email });
+      toast.success("Connexion reussie.");
       router.replace("/ucar/dashboard");
     } catch (error: unknown) {
-      setError(getLoginErrorMessage(error));
+      const message = getLoginErrorMessage(error);
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

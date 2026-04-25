@@ -1,3 +1,5 @@
+"use client";
+
 import SectionCard from "@/components/shared/SectionCard";
 import SeverityBadge from "@/components/shared/SeverityBadge";
 
