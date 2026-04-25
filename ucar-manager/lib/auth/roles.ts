@@ -1,6 +1,6 @@
 export const APP_ROLES = [
   "super_admin",
-  "org_admin",
+  "institution_admin",
   "hr_manager",
   "finance_manager",
   "academic_manager",
@@ -14,7 +14,7 @@ export const APP_ROLES = [
 export type AppRole = (typeof APP_ROLES)[number];
 
 export const INSTITUTION_ROLES = [
-  "org_admin",
+  "institution_admin",
   "hr_manager",
   "finance_manager",
   "academic_manager",
