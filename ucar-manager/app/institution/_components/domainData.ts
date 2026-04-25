@@ -56,10 +56,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard academique & pedagogie",
     subtitle: "Suivi des parcours, progression et examens",
     kpis: [
-      { title: "Taux de reussite", value: "78.6%", delta: "+1.2%", accentColor: "#2E7D32" },
-      { title: "Assiduite", value: "91.1%", delta: "+0.8%", accentColor: "#2E7D32" },
-      { title: "Redoublement", value: "9.4%", delta: "-0.6%", accentColor: "#2E7D32" },
-      { title: "Abandon", value: "6.8%", delta: "+0.5%", accentColor: "#BA1A1A" },
+      { title: "Étudiants inscrits", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Taux de réussite", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Taux d'abandon", value: "—", delta: "—", accentColor: "#BA1A1A" },
+      { title: "Taux de redoublement", value: "—", delta: "—", accentColor: "#C8A74B" },
     ],
     alerts: [
       { id: "a1", metric: "Cours non assures", detail: "18 seances non dispensees sur les 10 derniers jours.", severity: "high" },
