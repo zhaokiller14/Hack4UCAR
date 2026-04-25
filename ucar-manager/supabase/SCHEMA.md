@@ -110,7 +110,20 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 ---
 
-### 5. Research Domain
+---
+
+### 5. Finance Domain (extended)
+
+#### `external_fundings`
+- **Purpose**: External funding sources per institution and fiscal year (grants, partnerships, public subsidies, etc.).
+- **Key Fields**: `id`, `institution_id` (FK), `name`, `source_type`, `description`, `amount` (TND, numeric 14,3), `fiscal_year`, `source_upload_id` (FK to `raw_uploads`), `created_at`
+- **Scope**: Institution-scoped.
+- **RLS**: `ext_fundings_isolation` — visible to super admins or users of the same institution.
+- **View impact**: `v_finance_kpis_summary` is updated to include `total_external_income`, `funding_sources_count`, `self_financing_rate` (external / consumed × 100), and `total_income` (allocated + external).
+
+---
+
+### 6. Research Domain
 
 #### `research_projects`
 - **Purpose**: Research projects with funding, publications, and patent tracking.
@@ -120,7 +133,7 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 ---
 
-### 6. Partnerships Domain
+### 7. Partnerships Domain
 
 #### `partnerships`
 - **Purpose**: Partner agreements and student mobility numbers.
@@ -130,7 +143,7 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 ---
 
-### 7. Infrastructure Domain
+### 8. Infrastructure Domain
 
 #### `infrastructure_assets`
 - **Purpose**: Classrooms, labs, equipment with occupancy and status.
@@ -139,7 +152,7 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 ---
 
-### 8. ESG Domain
+### 9. ESG Domain
 
 #### `esg_records`
 - **Purpose**: Energy, water, carbon, waste, recycling per reporting period.
@@ -149,7 +162,7 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 ---
 
-### 9. KPI & Reporting Layer
+### 10. KPI & Reporting Layer
 
 #### `kpi_snapshots`
 - **Purpose**: Container for a KPI snapshot (domain + period + institution).
@@ -196,7 +209,7 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 ---
 
-### 10. Alerts & Reports
+### 11. Alerts & Reports
 
 #### `alerts`
 - **Purpose**: Institution-level KPI threshold alerts (triggered when KPI deviates from strategic goal).
@@ -222,7 +235,7 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 ---
 
-### 11. AI & Data Ingestion
+### 12. AI & Data Ingestion
 
 #### `raw_uploads`
 - **Purpose**: Files uploaded for AI extraction (PDFs, Excel, images).
@@ -244,7 +257,7 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 ---
 
-### 12. Communication
+### 13. Communication
 
 #### `announcements`
 - **Purpose**: UCAR-level announcements broadcast to all institutions.

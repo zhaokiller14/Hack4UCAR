@@ -1,6 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { getRoleHomePath, isAppRole, isInstitutionRole, type AppRole } from "@/lib/auth/roles";
 import { hasEnvVars } from "../utils";
+
+type UserRow = {
+  role: string | null;
+};
+
+function roleFromMetadata(metadata: Record<string, unknown> | undefined): AppRole | null {
+  const role = metadata?.role;
+  return isAppRole(role) ? role : null;
+}
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -39,30 +49,66 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
+  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
-  // IMPORTANT: If you remove getClaims() and you use server-side rendering
+  // IMPORTANT: If you remove getUser() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
-  const { pathname } = request.nextUrl;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (user && (pathname === "/auth/login" || pathname === "/auth/sign-up")) {
+  const { pathname } = request.nextUrl;
+  const isAuthRoute = pathname.startsWith("/auth");
+  const isUcarRoute = pathname.startsWith("/ucar");
+  const isInstitutionRoute = pathname.startsWith("/institution");
+
+  if (!user) {
+    if (isUcarRoute || isInstitutionRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/login";
+      return NextResponse.redirect(url);
+    }
+
+    return supabaseResponse;
+  }
+
+  const { data: userRow } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle<UserRow>();
+
+  const role = isAppRole(userRow?.role)
+    ? userRow?.role
+    : roleFromMetadata(user.app_metadata as Record<string, unknown> | undefined);
+  const roleHomePath = getRoleHomePath(role);
+
+  if (
+    isAuthRoute &&
+    (pathname === "/auth/login" || pathname === "/auth/sign-up") &&
+    roleHomePath
+  ) {
     const url = request.nextUrl.clone();
-    url.pathname = "/ucar/dashboard";
+    url.pathname = roleHomePath;
     return NextResponse.redirect(url);
   }
 
-  if (
-    pathname !== "/" &&
-    !user &&
-    !pathname.startsWith("/login") &&
-    !pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  if (pathname === "/" && roleHomePath) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = roleHomePath;
+    return NextResponse.redirect(url);
+  }
+
+  if (isUcarRoute && role !== "super_admin") {
+    const url = request.nextUrl.clone();
+    url.pathname = roleHomePath ?? "/auth/login";
+    return NextResponse.redirect(url);
+  }
+
+  if (isInstitutionRoute && !isInstitutionRole(role)) {
+    const url = request.nextUrl.clone();
+    url.pathname = roleHomePath ?? "/auth/login";
     return NextResponse.redirect(url);
   }
 
@@ -72,7 +118,7 @@ export async function updateSession(request: NextRequest) {
   if (user && (isSuperAdminPath || isAdminPath)) {
     let operatorRole: string | null = null;
 
-    const userId = user.sub;
+    const userId = user?.id; // Depending on how your Supabase auth is set up, the user ID might be in `sub` or `id`
 
     if (userId) {
       const { data: usersRow } = await supabase
