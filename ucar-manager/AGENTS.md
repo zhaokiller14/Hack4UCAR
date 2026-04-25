@@ -30,8 +30,8 @@ UCAR Manager is a multi-tenant, AI-powered university management platform for th
 
 ### Role Model
 
-- `ucar_admin`: UCAR-wide role with organization-level visibility.
-- Institution roles: `admin`, `hr_manager`, `finance_manager`, `academic_manager`, `research_manager`, `partnerships_manager`, `esg_manager`.
+- `super_admin`: UCAR-wide role with organization-level visibility.
+- Institution roles: `institution_admin`, `hr_manager`, `finance_manager`, `academic_manager`, `research_manager`, `partnerships_manager`, `esg_manager`, `infrastructure_manager`, `viewer`.
 - Users are scoped by `organization_id` and/or `institution_id` via platform data model and DB policies.
 
 ### Core Data Model (High-Level)
@@ -108,7 +108,7 @@ These are project-specific constraints and must be enforced.
 - Authenticate with Supabase Auth session first.
 - Resolve role from platform data model (`users` table semantics).
 - Redirect by role:
-  - `ucar_admin` -> `/ucar/dashboard`
+  - `super_admin` -> `/ucar/dashboard`
   - Institution roles -> `/institution/dashboard`
   - Unauthenticated -> `/auth/login`
 - Never expose UCAR-wide data to institution-scoped users.
@@ -143,6 +143,20 @@ These are project-specific constraints and must be enforced.
 
 - After schema changes, regenerate Supabase TypeScript types.
 - Keep query code aligned with generated types to avoid drift.
+
+### 5.7 SCHEMA.md Sync (Mandatory)
+
+`supabase/SCHEMA.md` is the shared source of truth for the database schema. All agents and team members read it to understand the current DB state.
+
+After any migration or manual DB change, update SCHEMA.md before finishing the task:
+
+- New tables or columns → add or update the table entry
+- Renamed tables, columns, or roles → update all references
+- New or modified views → document columns and aggregation logic
+- Dropped objects → remove their entries
+- RLS policy changes → update the RLS note on the affected table
+
+Never leave SCHEMA.md stale. Treat it as part of the migration, not optional documentation.
 
 ## 6. Verification Checklist Before Finishing
 
