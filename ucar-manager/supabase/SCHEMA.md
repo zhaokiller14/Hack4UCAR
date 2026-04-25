@@ -172,9 +172,15 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 #### `esg_records`
 - **Purpose**: Energy, water, carbon, waste, recycling per reporting period.
-- **Key Fields**: `id`, `institution_id` (FK), `reporting_period`, `energy_kwh`, `water_liters`, `carbon_tons`, `waste_kg`, `recycled_kg`, `created_at`, `updated_at`
+- **Key Fields**: `id`, `institution_id` (FK), `period_type` (monthly/semester/annual), `period_start`, `period_end`, `energy_kwh`, `water_liters`, `carbon_kg`, `waste_kg`, `recycled_kg`, `green_mobility_pct`, `source_upload_id`, `created_at`
 - **Scope**: Institution-scoped.
 - **RLS**: Visible to ESG managers and admins of the same institution.
+- **Unique constraint**: `(institution_id, period_type, period_start)` — one record per institution per period.
+
+#### `v_esg_kpis` (view)
+- **Purpose**: Aggregated ESG KPIs per institution and period, across all period types.
+- **Columns**: `institution_id`, `period_type`, `period_start`, `period_end`, `energy_kwh`, `carbon_kg`, `water_liters`, `waste_kg`, `recycled_kg`, `recycling_rate`, `green_mobility_pct`
+- **Aggregation**: metrics are SUMmed, `green_mobility_pct` is AVGed, grouped by `(institution_id, period_type, period_start, period_end)`. Covers monthly, semester, and annual records.
 
 ---
 
