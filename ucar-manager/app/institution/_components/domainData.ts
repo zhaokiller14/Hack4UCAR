@@ -272,10 +272,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard infrastructure & equipements",
     subtitle: "Salles, IT et travaux en cours",
     kpis: [
-      { title: "Occupation salles", value: "84%", delta: "+2%", accentColor: "#1B4F6B" },
-      { title: "Etat parc IT", value: "91%", delta: "+1%", accentColor: "#2E7D32" },
-      { title: "Disponibilite equipements", value: "88%", delta: "-1%", accentColor: "#C8A74B" },
-      { title: "Travaux en cours", value: "7", delta: "+2", accentColor: "#1B4F6B" },
+      { title: "Taux opérationnel", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Occupation moyenne", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "En maintenance", value: "—", delta: "—", accentColor: "#C8A74B" },
+      { title: "Salles / Labos", value: "—", delta: "—", accentColor: "#1B4F6B" },
     ],
     alerts: [
       { id: "a1", metric: "Salles surutilisees", detail: "4 salles depassent 95% d'occupation hebdomadaire.", severity: "high" },
@@ -308,10 +308,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard partenariats & mobilite",
     subtitle: "Accords actifs et flux de mobilite",
     kpis: [
-      { title: "Accords actifs", value: "58", delta: "+4", accentColor: "#1B4F6B" },
-      { title: "Mobilite entrante", value: "126", delta: "+9%", accentColor: "#2E7D32" },
-      { title: "Mobilite sortante", value: "102", delta: "+7%", accentColor: "#2E7D32" },
-      { title: "Projets internationaux", value: "14", delta: "+2", accentColor: "#1B4F6B" },
+      { title: "Partenariats actifs", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Mobilité sortante", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Partenariats internationaux", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Académique / Industrie", value: "—", delta: "—", accentColor: "#C8A74B" },
     ],
     alerts: [
       { id: "a1", metric: "Conventions a renouveler", detail: "8 accords expirent au prochain semestre.", severity: "high" },
