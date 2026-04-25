@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import SectionCard from "@/components/shared/SectionCard";
 import SeverityBadge from "@/components/shared/SeverityBadge";
 
@@ -26,8 +27,10 @@ const SEVERITY_BORDER: Record<string, string> = {
   low:      "border-slate-200 bg-slate-50",
 };
 
-function timeAgo(iso: string) {
-  const diffH = Math.round((Date.now() - new Date(iso).getTime()) / 3_600_000);
+function timeAgo(iso: string, now: number | null) {
+  if (now === null) return "";
+
+  const diffH = Math.round((now - new Date(iso).getTime()) / 3_600_000);
   if (diffH < 1) return "Il y a moins d'1h";
   if (diffH < 24) return `Il y a ${diffH}h`;
   const diffD = Math.round(diffH / 24);
@@ -35,6 +38,12 @@ function timeAgo(iso: string) {
 }
 
 export default function AlertsFeed({ alerts }: { alerts: AlertItem[] }) {
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    setNow(Date.now());
+  }, []);
+
   return (
     <SectionCard title="Alertes actives" description="Anomalies non acquittées sur le réseau">
       {alerts.length === 0 ? (
@@ -48,7 +57,7 @@ export default function AlertsFeed({ alerts }: { alerts: AlertItem[] }) {
             >
               <div className="flex justify-between items-start">
                 <SeverityBadge severity={alert.severity} />
-                <span className="text-[11px] text-slate-400">{timeAgo(alert.triggered_at)}</span>
+                <span className="text-[11px] text-slate-400">{timeAgo(alert.triggered_at, now)}</span>
               </div>
               <p className="text-sm text-[#1B1C1A]">
                 {METRIC_FR[alert.metric] ?? alert.metric} — <span className="font-medium">{alert.institution_name}</span>

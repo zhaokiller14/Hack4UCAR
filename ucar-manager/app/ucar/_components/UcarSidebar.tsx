@@ -44,7 +44,7 @@ export default function UcarSidebar() {
           alt="UCAR Logo"
           width={80}
           height={60}
-          className="rounded-lg shrink-0 h-auto"
+          className="rounded-lg shrink-0"
         />
         <div>
           <p className="text-base font-black text-[#1B4F6B] leading-tight">UCAR Admin</p>
