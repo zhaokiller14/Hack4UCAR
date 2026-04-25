@@ -62,6 +62,19 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = pathname.startsWith("/auth");
   const isUcarRoute = pathname.startsWith("/ucar");
   const isInstitutionRoute = pathname.startsWith("/institution");
+  const restrictedInstitutionUcarPrefixes = [
+    "/ucar/academic",
+    "/ucar/employment",
+    "/ucar/finance",
+    "/ucar/hr",
+    "/ucar/research",
+    "/ucar/esg",
+    "/ucar/infrastructure",
+    "/ucar/partnerships",
+  ];
+  const isRestrictedInstitutionUcarRoute = restrictedInstitutionUcarPrefixes.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 
   if (!user) {
     if (isUcarRoute || isInstitutionRoute) {
@@ -97,6 +110,18 @@ export async function updateSession(request: NextRequest) {
   if (pathname === "/" && roleHomePath) {
     const url = request.nextUrl.clone();
     url.pathname = roleHomePath;
+    return NextResponse.redirect(url);
+  }
+
+  if (isRestrictedInstitutionUcarRoute && role === "super_admin") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/forbidden";
+    return NextResponse.redirect(url);
+  }
+
+  if (isRestrictedInstitutionUcarRoute && !isInstitutionRole(role)) {
+    const url = request.nextUrl.clone();
+    url.pathname = roleHomePath ?? "/auth/login";
     return NextResponse.redirect(url);
   }
 

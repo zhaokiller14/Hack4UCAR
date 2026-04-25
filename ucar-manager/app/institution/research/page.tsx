@@ -1,1 +1,6 @@
-export default function InstitutionResearch() { return <div>Research</div>; }
+import DomainDashboardPage from "../_components/DomainDashboardPage";
+import { getInstitutionDomainDashboard } from "../_components/domainData";
+
+export default function InstitutionResearch() {
+	return <DomainDashboardPage {...getInstitutionDomainDashboard("research")} />;
+}

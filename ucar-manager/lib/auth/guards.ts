@@ -7,6 +7,7 @@ type UserRow = {
   role: string | null;
   institution_id: string | null;
   organization_id: string | null;
+  full_name: string | null;
 };
 
 export type ServerUserContext = {
@@ -14,6 +15,7 @@ export type ServerUserContext = {
   role: AppRole | null;
   institutionId: string | null;
   organizationId: string | null;
+  fullName: string | null;
 };
 
 function extractRoleFromUser(user: { app_metadata?: Record<string, unknown> }): AppRole | null {
@@ -34,7 +36,7 @@ export async function getServerUserContext(): Promise<ServerUserContext | null> 
 
   const { data } = await supabase
     .from("users")
-    .select("role, institution_id, organization_id")
+    .select("role, institution_id, organization_id, full_name")
     .eq("id", user.id)
     .maybeSingle<UserRow>();
 
@@ -46,6 +48,7 @@ export async function getServerUserContext(): Promise<ServerUserContext | null> 
     role,
     institutionId: data?.institution_id ?? null,
     organizationId: data?.organization_id ?? null,
+    fullName: data?.full_name ?? null,
   };
 }
 
