@@ -4,7 +4,29 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+function getLoginErrorMessage(error: unknown) {
+  if (error && typeof error === "object" && "message" in error) {
+    const message = String(error.message).toLowerCase();
+
+    if (message.includes("invalid login credentials")) {
+      return "Email ou mot de passe incorrect. Veuillez verifier vos informations.";
+    }
+
+    if (message.includes("email not confirmed")) {
+      return "Votre email n'est pas encore confirme. Verifiez votre boite mail.";
+    }
+
+    if (message.includes("too many requests")) {
+      return "Trop de tentatives. Merci de patienter avant de reessayer.";
+    }
+
+    return String(error.message);
+  }
+
+  return "Une erreur est survenue. Merci de reessayer.";
+}
 
 export function LoginForm({
   className,
@@ -15,6 +37,30 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createClient();
+    let isMounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (isMounted && data.session) {
+        router.replace("/");
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        router.replace("/");
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,10 +74,9 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
+      router.replace("/");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(getLoginErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +187,10 @@ export function LoginForm({
             </div>
 
             {error && (
-              <p className="rounded border border-[#ffdad6] bg-[#fff4f2] px-3 py-2 text-sm text-[#93000a]">
+              <p
+                role="alert"
+                className="rounded border border-[#ffdad6] bg-[#fff4f2] px-3 py-2 text-sm text-[#93000a]"
+              >
                 {error}
               </p>
             )}

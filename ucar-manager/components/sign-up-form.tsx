@@ -4,7 +4,33 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+function getSignUpErrorMessage(error: unknown) {
+  if (error && typeof error === "object" && "message" in error) {
+    const message = String(error.message).toLowerCase();
+
+    if (message.includes("already registered") || message.includes("already been registered")) {
+      return "Cet email est deja associe a un compte. Connectez-vous directement.";
+    }
+
+    if (message.includes("password") && message.includes("6")) {
+      return "Votre mot de passe est trop court. Utilisez au moins 6 caracteres.";
+    }
+
+    if (message.includes("invalid email")) {
+      return "Veuillez entrer une adresse email institutionnelle valide.";
+    }
+
+    if (message.includes("too many requests")) {
+      return "Trop de tentatives. Merci de patienter avant de reessayer.";
+    }
+
+    return String(error.message);
+  }
+
+  return "Une erreur est survenue. Merci de reessayer.";
+}
 
 export function SignUpForm({
   className,
@@ -17,6 +43,30 @@ export function SignUpForm({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    const supabase = createClient();
+    let isMounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (isMounted && data.session) {
+        router.replace("/");
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        router.replace("/");
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [router]);
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
@@ -24,7 +74,7 @@ export function SignUpForm({
     setError(null);
 
     if (password !== repeatPassword) {
-      setError("Passwords do not match");
+      setError("Les mots de passe ne correspondent pas.");
       setIsLoading(false);
       return;
     }
@@ -34,13 +84,13 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
       if (error) throw error;
-      router.push("/auth/sign-up-success");
+      router.replace("/");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(getSignUpErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -165,7 +215,10 @@ export function SignUpForm({
             </div>
 
             {error && (
-              <p className="rounded border border-[#ffdad6] bg-[#fff4f2] px-3 py-2 text-sm text-[#93000a]">
+              <p
+                role="alert"
+                className="rounded border border-[#ffdad6] bg-[#fff4f2] px-3 py-2 text-sm text-[#93000a]"
+              >
                 {error}
               </p>
             )}
