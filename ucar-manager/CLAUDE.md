@@ -133,7 +133,7 @@ Planned structure (to be built):
 
 ## Auth and routing rules
 
-After login, check `profiles.role`:
+After login, check `users.role`:
 - `super_admin` → redirect to `/ucar/dashboard`
 - any other role → redirect to `/org/[institution_id]/dashboard`
 
@@ -144,7 +144,7 @@ Never trust role from client — always read from Supabase session server-side.
 | Role | Accessible modules |
 |---|---|
 | `super_admin` | Everything, all institutions |
-| `org_admin` | All modules within own institution |
+| `institution_admin` | All modules within own institution |
 | `finance_manager` | finance only |
 | `hr_manager` | hr only |
 | `academic_manager` | academic only |
