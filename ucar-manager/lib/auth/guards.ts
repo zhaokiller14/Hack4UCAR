@@ -56,7 +56,7 @@ export async function requireUcarAdmin(): Promise<ServerUserContext> {
     redirect("/auth/login");
   }
 
-  if (context.role !== "ucar_admin") {
+  if (context.role !== "super_admin") {
     redirect(getRoleHomePath(context.role) ?? "/auth/login");
   }
 

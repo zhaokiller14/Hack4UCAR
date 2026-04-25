@@ -1,24 +1,28 @@
 export const APP_ROLES = [
-  "ucar_admin",
-  "admin",
+  "super_admin",
+  "org_admin",
   "hr_manager",
   "finance_manager",
   "academic_manager",
   "research_manager",
   "partnerships_manager",
   "esg_manager",
+  "infrastructure_manager",
+  "viewer",
 ] as const;
 
 export type AppRole = (typeof APP_ROLES)[number];
 
 export const INSTITUTION_ROLES = [
-  "admin",
+  "org_admin",
   "hr_manager",
   "finance_manager",
   "academic_manager",
   "research_manager",
   "partnerships_manager",
   "esg_manager",
+  "infrastructure_manager",
+  "viewer",
 ] as const;
 
 export type InstitutionRole = (typeof INSTITUTION_ROLES)[number];
@@ -35,7 +39,7 @@ export function isInstitutionRole(role: unknown): role is InstitutionRole {
 }
 
 export function getRoleHomePath(role: unknown): string | null {
-  if (role === "ucar_admin") {
+  if (role === "super_admin") {
     return "/ucar/dashboard";
   }
 
