@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+import type { KpiSnapshotInput } from "@/lib/kpi";
+
+import { createKpiSnapshot } from "@/lib/kpi";
 import {
 	CrudError,
 	getAuthedSupabase,
@@ -14,7 +17,8 @@ type SnapshotCreateRequest = {
 	period_type: string;
 	period_start: string;
 	period_end: string;
-	metrics?: Record<string, unknown>;
+	academic_year?: string;
+	fiscal_year?: string;
 };
 
 export async function GET(request: Request) {
@@ -67,7 +71,6 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
 	try {
-		const { supabase } = await getAuthedSupabase();
 		const payload = unwrapData<unknown>(await readRequestJson(request));
 
 		if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
@@ -83,7 +86,8 @@ export async function POST(request: Request) {
 			period_type,
 			period_start,
 			period_end,
-			metrics,
+			academic_year,
+			fiscal_year,
 		} = payload as SnapshotCreateRequest;
 
 		if (!institution_id || !domain || !period_type || !period_start || !period_end) {
@@ -96,24 +100,16 @@ export async function POST(request: Request) {
 			);
 		}
 
-		const { data, error } = await supabase
-			.from("kpi_snapshots")
-			.insert({
-				institution_id,
-				domain,
-				period_type,
-				period_start,
-				period_end,
-				metrics: metrics ?? {},
-			})
-			.select()
-			.single();
+		const data = await createKpiSnapshot({
+			institution_id,
+			domain,
+			period_type,
+			period_start,
+			period_end,
+			academic_year,
+			fiscal_year,
+		} as KpiSnapshotInput);
 
-		if (error) {
-			return NextResponse.json({ error: error.message }, { status: 400 });
-		}
-
-		// TODO: Compute metrics server-side instead of accepting client input.
 		return NextResponse.json({ data }, { status: 201 });
 	} catch (error) {
 		return handleCrudError(error);
