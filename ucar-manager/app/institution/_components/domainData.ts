@@ -200,10 +200,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard recherche & innovation",
     subtitle: "Production scientifique, projets et financement",
     kpis: [
-      { title: "Publications", value: "142", delta: "+11", accentColor: "#2E7D32" },
-      { title: "Projets actifs", value: "28", delta: "+2", accentColor: "#1B4F6B" },
-      { title: "Financement securise", value: "3.7 M TND", delta: "+9%", accentColor: "#2E7D32" },
-      { title: "Brevets deposes", value: "6", delta: "+1", accentColor: "#1B4F6B" },
+      { title: "Publications", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Projets actifs", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Financement sécurisé", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Brevets déposés", value: "—", delta: "—", accentColor: "#1B4F6B" },
     ],
     alerts: [
       { id: "a1", metric: "Retard livrables projet", detail: "2 projets nationaux depassent les jalons de 20 jours.", severity: "high" },
