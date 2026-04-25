@@ -236,10 +236,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard ESG & RSE",
     subtitle: "Environnement, inclusion et gouvernance",
     kpis: [
-      { title: "Conso energie", value: "-8.4%", delta: "vs N-1", accentColor: "#2E7D32" },
-      { title: "Empreinte carbone", value: "-6.1%", delta: "vs N-1", accentColor: "#2E7D32" },
-      { title: "Taux recyclage", value: "52%", delta: "+4%", accentColor: "#1B4F6B" },
-      { title: "Accessibilite campus", value: "81%", delta: "+3%", accentColor: "#1B4F6B" },
+      { title: "Consommation énergie", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Empreinte carbone", value: "—", delta: "—", accentColor: "#C8A74B" },
+      { title: "Taux de recyclage", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Mobilité verte", value: "—", delta: "—", accentColor: "#2E7D32" },
     ],
     alerts: [
       { id: "a1", metric: "Consommation nocturne", detail: "Pics anormaux detectes sur 2 batiments administratifs.", severity: "high" },
