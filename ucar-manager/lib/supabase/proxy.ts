@@ -100,7 +100,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (isUcarRoute && role !== "ucar_admin") {
+  if (isUcarRoute && role !== "super_admin") {
     const url = request.nextUrl.clone();
     url.pathname = roleHomePath ?? "/auth/login";
     return NextResponse.redirect(url);

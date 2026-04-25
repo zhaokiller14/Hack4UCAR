@@ -1,5 +1,5 @@
 export const APP_ROLES = [
-  "ucar_admin",
+  "super_admin",
   "admin",
   "hr_manager",
   "finance_manager",
@@ -35,7 +35,7 @@ export function isInstitutionRole(role: unknown): role is InstitutionRole {
 }
 
 export function getRoleHomePath(role: unknown): string | null {
-  if (role === "ucar_admin") {
+  if (role === "super_admin") {
     return "/ucar/dashboard";
   }
 
