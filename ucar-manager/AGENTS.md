@@ -22,6 +22,12 @@ UCAR Manager is a multi-tenant, AI-powered university management platform for th
 - Backend platform: Supabase (PostgreSQL, Auth, RLS, Storage).
 - AI services: Python + FastAPI (called from Next.js server routes/actions).
 
+### UX and Localization Baseline
+
+- The website and all pages must be in French.
+- The website must use light mode across all pages.
+- UI language and visual choices should target UCAR and university administration staff.
+
 ### Role Model
 
 - `ucar_admin`: UCAR-wide role with organization-level visibility.
