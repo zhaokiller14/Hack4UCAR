@@ -128,10 +128,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard finance & comptabilite",
     subtitle: "Execution budgetaire et performance de depense",
     kpis: [
-      { title: "Budget alloue", value: "12.8 M TND", delta: "+4.0%", accentColor: "#1B4F6B" },
-      { title: "Budget consomme", value: "11.4 M TND", delta: "+2.8%", accentColor: "#1B4F6B" },
-      { title: "Execution", value: "89.1%", delta: "+1.4%", accentColor: "#2E7D32" },
-      { title: "Cout par etudiant", value: "4 320 TND", delta: "-1.6%", accentColor: "#2E7D32" },
+      { title: "Budget alloué", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Budget consommé", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Taux d'exécution", value: "—", delta: "—", accentColor: "#C8A74B" },
+      { title: "Coût par étudiant", value: "—", delta: "—", accentColor: "#1B4F6B" },
     ],
     alerts: [
       { id: "a1", metric: "Depassement maintenance", detail: "Depense superieure de 12% a la trajectoire previsionnelle.", severity: "high" },
