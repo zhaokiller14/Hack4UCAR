@@ -7,7 +7,7 @@ import SectionCard from "@/components/shared/SectionCard";
 const AUDIENCE_OPTIONS = [
   { value: "all",                  label: "Tous les utilisateurs" },
   { value: "super_admin",          label: "Super administrateurs" },
-  { value: "org_admin",            label: "Directeurs d'établissement" },
+  { value: "institution_admin",    label: "Directeurs d'établissement" },
   { value: "finance_manager",      label: "Responsables finance" },
   { value: "hr_manager",           label: "Responsables RH" },
   { value: "academic_manager",     label: "Responsables académiques" },
