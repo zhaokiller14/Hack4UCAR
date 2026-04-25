@@ -92,10 +92,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard emploi & alumni",
     subtitle: "Insertion professionnelle et reseau des diplomes",
     kpis: [
-      { title: "Employabilite", value: "76.9%", delta: "+2.1%", accentColor: "#2E7D32" },
-      { title: "Delai vers emploi", value: "5.2 mois", delta: "-0.4", accentColor: "#2E7D32" },
-      { title: "Partenariats nationaux", value: "42", delta: "+3", accentColor: "#1B4F6B" },
-      { title: "Partenariats internationaux", value: "17", delta: "+1", accentColor: "#1B4F6B" },
+      { title: "Taux d'employabilité", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Délai vers emploi", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Emploi national", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Emploi international", value: "—", delta: "—", accentColor: "#C8A74B" },
     ],
     alerts: [
       { id: "a1", metric: "Baisse insertion SI", detail: "La filiere SI enregistre -4.3 points sur 2 trimestres.", severity: "high" },
