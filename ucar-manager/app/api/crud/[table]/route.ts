@@ -12,13 +12,14 @@ import {
 } from "@/lib/db/crud";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     table: string;
-  };
+  }>;
 };
 
 export async function GET(request: Request, { params }: RouteParams) {
-  const table = getCrudTable(params.table);
+  const { table: tableParam } = await params;
+  const table = getCrudTable(tableParam);
 
   if (!table) {
     return NextResponse.json({ error: "Unknown table." }, { status: 404 });
@@ -55,7 +56,8 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 export async function POST(request: Request, { params }: RouteParams) {
-  const table = getCrudTable(params.table);
+  const { table: tableParam } = await params;
+  const table = getCrudTable(tableParam);
 
   if (!table) {
     return NextResponse.json({ error: "Unknown table." }, { status: 404 });
