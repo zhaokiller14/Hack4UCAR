@@ -11,7 +11,7 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 ### Core Principles
 
 - **Multi-Tenancy**: Institutions are the primary tenant boundary, enforced via `institution_id` and PostgreSQL Row-Level Security (RLS).
-- **RBAC**: User roles (`ucar_admin`, `admin`, `hr_manager`, etc.) determine data visibility and portal access.
+- **RBAC**: User roles (`super_admin`, `institution_admin`, `hr_manager`, etc.) determine data visibility and portal access.
 - **Immutability**: KPI snapshots are persisted snapshots; they are never recomputed on the fly.
 - **Security**: All queries use server-side Supabase clients; RLS policies enforce tenant isolation at the DB layer.
 
@@ -35,7 +35,7 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 #### `users`
 - **Purpose**: All platform users (authentication + profile + role assignment).
 - **Key Fields**: `id` (FK to Supabase Auth), `email`, `role`, `organization_id`, `institution_id`, `created_at`, `updated_at`
-- **Roles**: `ucar_admin`, `admin`, `hr_manager`, `finance_manager`, `academic_manager`, `research_manager`, `partnerships_manager`, `esg_manager`
+- **Roles**: `super_admin`, `institution_admin`, `hr_manager`, `finance_manager`, `academic_manager`, `research_manager`, `partnerships_manager`, `esg_manager`, `infrastructure_manager`, `viewer`
 - **RLS**: Users can only see their own profile; institution roles scoped to their institution.
 
 ---
@@ -120,6 +120,22 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 - **Scope**: Institution-scoped.
 - **RLS**: `ext_fundings_isolation` — visible to super admins or users of the same institution.
 - **View impact**: `v_finance_kpis_summary` is updated to include `total_external_income`, `funding_sources_count`, `self_financing_rate` (external / consumed × 100), and `total_income` (allocated + external).
+
+---
+
+### 5b. Employment Domain
+
+#### `student_jobs`
+- **Purpose**: Post-graduation employment records for employability KPI tracking.
+- **Key Fields**: `id`, `student_id` (FK to `students`), `institution_id` (FK), `employment_date`, `job_country` (default `'TN'`), `created_at`
+- **Scope**: Institution-scoped.
+- **RLS**: `student_jobs_isolation` — visible to super admins or users of the same institution.
+- **Constraint**: `employment_date` must be ≥ `graduation_date` (enforced via trigger `trg_employment_after_graduation`).
+
+#### `v_employment_kpis` (view)
+- **Purpose**: Computes employment KPIs per institution from `students` and `student_jobs`.
+- **Columns**: `institution_id`, `total_graduated`, `employed_count`, `employability_rate`, `national_employed_count`, `national_employment_rate`, `international_employed_count`, `international_employment_rate`, `avg_days_to_employ`
+- **National**: `job_country = 'TN'` — **International**: `job_country <> 'TN'`
 
 ---
 
