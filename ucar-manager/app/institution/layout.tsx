@@ -1,23 +1,21 @@
-import { Suspense } from "react";
-
 import { requireInstitutionRole } from "@/lib/auth/guards";
-
-async function InstitutionAccessGate() {
-  await requireInstitutionRole();
-  return null;
-}
+import InstitutionSidebar from "@/components/layout/InstitutionSidebar";
 
 export default async function InstitutionLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
+	const userContext = await requireInstitutionRole();
+	const roleLabel = userContext.role ?? "Utilisateur";
+
 	return (
-		<section>
-			<Suspense fallback={null}>
-				<InstitutionAccessGate />
-			</Suspense>
-			{children}
-		</section>
+		<div className="flex h-screen overflow-hidden bg-[#FAF9F6]">
+			<InstitutionSidebar
+				userName={userContext.fullName ?? "Utilisateur"}
+				userRole={roleLabel}
+			/>
+			<main className="flex-1 overflow-y-auto">{children}</main>
+		</div>
 	);
 }

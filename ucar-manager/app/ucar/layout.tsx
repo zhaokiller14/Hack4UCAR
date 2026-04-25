@@ -1,21 +1,27 @@
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-import { requireUcarAdmin } from "@/lib/auth/guards";
+import { getServerUserContext } from "@/lib/auth/guards";
 
 import UcarSidebar from "./_components/UcarSidebar";
 
-async function UcarAccessGate() {
-  await requireUcarAdmin();
-  return null;
-}
-
 export default async function UcarLayout({ children }: { children: React.ReactNode }) {
+  const userContext = await getServerUserContext();
+
+  if (!userContext) {
+    redirect("/auth/login");
+  }
+
+  const roleLabel = userContext.role === "super_admin"
+    ? "Super Admin"
+    : userContext.role ?? "Utilisateur";
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#FAF9F6]">
-      <Suspense fallback={null}>
-        <UcarAccessGate />
-      </Suspense>
-      <UcarSidebar />
+      <UcarSidebar
+        userName={userContext.fullName ?? "Utilisateur"}
+        userRole={roleLabel}
+        userRoleKey={userContext.role}
+      />
       <main className="flex-1 overflow-y-auto">
         {children}
       </main>
