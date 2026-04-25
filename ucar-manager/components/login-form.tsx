@@ -2,16 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -48,63 +38,133 @@ export function LoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
+    <div
+      className={cn(
+        "flex min-h-screen w-full overflow-hidden bg-[#faf9f6] text-[#1b1c1a]",
+        className,
+      )}
+      {...props}
+    >
+      <aside className="relative hidden w-[40%] flex-col justify-between bg-[#efeeeb] p-8 lg:flex">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(90deg, transparent, transparent 40px, #1b4f6b 40px, #1b4f6b 42px)",
+          }}
+        />
+        <div className="relative z-10 flex flex-grow flex-col items-center justify-center space-y-3 text-center">
+          <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-[#c1c7ce] bg-white p-4">
+            <span className="text-2xl font-bold text-[#1b4f6b]">UC</span>
+          </div>
+          <h1 className="text-3xl font-semibold uppercase tracking-tight text-[#1b4f6b]">
+            Universite de Carthage
+          </h1>
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#41484d]">
+            Plateforme d&apos;Intelligence Institutionnelle
+          </p>
+          <div className="my-8 h-px w-16 bg-[#c1c7ce]" />
+          <p className="text-lg text-[#1b1c1a]">Bienvenue sur UCAR Intelligence</p>
+        </div>
+        <p className="relative z-10 text-center text-xs text-[#41484d]">
+          © 2026 UCAR. Tous droits reserves.
+        </p>
+      </aside>
+
+      <main className="flex w-full items-center justify-center bg-white p-6 lg:w-[60%] lg:p-10">
+        <div className="w-full max-w-md">
+          <div className="mb-10 lg:hidden">
+            <h1 className="text-center text-2xl font-semibold uppercase tracking-tight text-[#1b4f6b]">
+              Universite de Carthage
+            </h1>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="mb-2 text-3xl font-semibold text-[#1b1c1a]">Bienvenue</h2>
+            <p className="text-sm text-[#41484d]">
+              Veuillez vous authentifier pour acceder au portail de gestion.
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="block text-xs font-semibold uppercase tracking-wider text-[#41484d]"
+              >
+                Email institutionnel
+              </label>
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#71787e]">
+                  @
+                </span>
+                <input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="prenom.nom@ucar.rnu.tn"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded border border-[#c1c7ce] bg-white py-2 pl-9 pr-3 text-sm text-[#1b1c1a] outline-none transition-colors placeholder:text-[#71787e] focus:border-[#c8a74b]"
                 />
               </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-                <Input
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-semibold uppercase tracking-wider text-[#41484d]"
+                >
+                  Mot de passe
+                </label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-xs text-[#1b4f6b] hover:underline"
+                >
+                  Mot de passe oublie ?
+                </Link>
+              </div>
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#71787e]">
+                  *
+                </span>
+                <input
                   id="password"
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded border border-[#c1c7ce] bg-white py-2 pl-9 pr-3 text-sm text-[#1b1c1a] outline-none transition-colors placeholder:text-[#71787e] focus:border-[#c8a74b]"
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
-              </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/auth/sign-up"
-                className="underline underline-offset-4"
-              >
+
+            {error && (
+              <p className="rounded border border-[#ffdad6] bg-[#fff4f2] px-3 py-2 text-sm text-[#93000a]">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex w-full items-center justify-center gap-2 rounded bg-[#1b4f6b] px-4 py-3 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#336380] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <span>{isLoading ? "Connexion..." : "Se connecter"}</span>
+              <span aria-hidden="true">&rarr;</span>
+            </button>
+
+            <p className="pt-2 text-center text-sm text-[#41484d]">
+              Vous n&apos;avez pas de compte ?{" "}
+              <Link href="/auth/sign-up" className="text-[#1b4f6b] underline">
                 Sign up
               </Link>
-            </div>
+            </p>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </main>
     </div>
   );
 }
