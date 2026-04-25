@@ -11,6 +11,22 @@ export type InstitutionDetail = {
   created_at: string;
 };
 
+export async function getInstitutionsList() {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("institutions")
+    .select(
+      "id, name, code, city, president_name, contact_email, is_active, created_at",
+    )
+    .order("name", { ascending: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []) as InstitutionDetail[];
+}
+
 export async function getInstitutionById(id: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
