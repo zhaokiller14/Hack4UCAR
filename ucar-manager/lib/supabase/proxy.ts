@@ -50,7 +50,7 @@ export async function updateSession(request: NextRequest) {
 
   if (user && (pathname === "/auth/login" || pathname === "/auth/sign-up")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = "/ucar/dashboard";
     return NextResponse.redirect(url);
   }
 
@@ -64,6 +64,44 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
+  }
+
+  const isSuperAdminPath = pathname.startsWith("/super-admin");
+  const isAdminPath = pathname.startsWith("/admin");
+
+  if (user && (isSuperAdminPath || isAdminPath)) {
+    let operatorRole: string | null = null;
+
+    const userId = user.sub;
+
+    if (userId) {
+      const { data: usersRow } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", userId)
+        .maybeSingle();
+
+      operatorRole = usersRow?.role ?? null;
+
+      if (!operatorRole) {
+        const { data: profilesRow } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", userId)
+          .maybeSingle();
+
+        operatorRole = profilesRow?.role ?? null;
+      }
+    }
+
+    if (
+      (isSuperAdminPath && operatorRole !== "super_admin") ||
+      (isAdminPath && operatorRole !== "org_admin")
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/forbidden";
+      return NextResponse.redirect(url);
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

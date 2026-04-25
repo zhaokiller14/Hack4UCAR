@@ -44,7 +44,7 @@ export function LoginForm({
 
     supabase.auth.getSession().then(({ data }) => {
       if (isMounted && data.session) {
-        router.replace("/");
+        router.replace("/ucar/dashboard");
       }
     });
 
@@ -52,7 +52,7 @@ export function LoginForm({
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        router.replace("/");
+        router.replace("/ucar/dashboard");
       }
     });
 
@@ -74,7 +74,7 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      router.replace("/");
+      router.replace("/ucar/dashboard");
     } catch (error: unknown) {
       setError(getLoginErrorMessage(error));
     } finally {
