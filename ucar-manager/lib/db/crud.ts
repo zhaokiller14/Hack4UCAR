@@ -5,7 +5,7 @@ const CRUD_TABLES = {
   organization: { superAdminOnly: true },
   ucar_kpi_aggregates: { superAdminOnly: true },
   institutions: {},
-  profiles: {},
+  users: {},
   staff: {},
   absences: {},
   trainings: {},
