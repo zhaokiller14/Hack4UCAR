@@ -107,12 +107,6 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (pathname === "/" && roleHomePath) {
-    const url = request.nextUrl.clone();
-    url.pathname = roleHomePath;
-    return NextResponse.redirect(url);
-  }
-
   if (isRestrictedInstitutionUcarRoute && role === "super_admin") {
     const url = request.nextUrl.clone();
     url.pathname = "/forbidden";
