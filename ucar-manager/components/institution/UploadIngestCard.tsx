@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Paperclip, X } from "lucide-react";
 
 type UploadIngestCardProps = {
   institutionId: string;
@@ -258,6 +259,7 @@ export default function UploadIngestCard({
   institutionId,
 }: UploadIngestCardProps) {
   const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -307,6 +309,8 @@ export default function UploadIngestCard({
       setRawUploadId(nextRawUploadId);
       setEditableEntities(mapExtractionToEditable(extraction));
       setRelations(extraction.relations);
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       setSuccess(
         `Upload complete (${nextRawUploadId}). ${extraction.entities.length} entities extracted and ready for review.`,
       );
@@ -392,13 +396,43 @@ export default function UploadIngestCard({
       <CardContent className="space-y-6">
         <form className="space-y-4" onSubmit={handleUploadAndExtract}>
           <div className="space-y-2">
-            <Label htmlFor="source-file">File</Label>
-            <Input
-              id="source-file"
-              type="file"
-              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-              required
-            />
+            <Label>File</Label>
+            <div className="flex items-center gap-3">
+              <input
+                ref={fileInputRef}
+                id="source-file"
+                type="file"
+                className="sr-only"
+                onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Paperclip className="h-4 w-4" />
+                Browse
+              </Button>
+              {file ? (
+                <div className="flex min-w-0 items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-700">
+                  <span className="truncate">{file.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    className="ml-1 shrink-0 text-slate-400 hover:text-slate-700"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <span className="text-sm text-slate-400">No file chosen</span>
+              )}
+            </div>
           </div>
 
           {!hasInstitutionId ? (
