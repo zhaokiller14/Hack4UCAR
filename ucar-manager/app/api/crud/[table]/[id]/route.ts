@@ -11,14 +11,15 @@ import {
 } from "@/lib/db/crud";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     table: string;
     id: string;
-  };
+  }>;
 };
 
 export async function GET(request: Request, { params }: RouteParams) {
-  const table = getCrudTable(params.table);
+  const { table: tableName, id } = await params;
+  const table = getCrudTable(tableName);
 
   if (!table) {
     return NextResponse.json({ error: "Unknown table." }, { status: 404 });
@@ -35,7 +36,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     const { data, error } = await supabase
       .from(table)
       .select(select)
-      .eq("id", params.id)
+      .eq("id", id)
       .maybeSingle();
 
     if (error) {
@@ -53,7 +54,8 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 export async function PATCH(request: Request, { params }: RouteParams) {
-  const table = getCrudTable(params.table);
+  const { table: tableName, id } = await params;
+  const table = getCrudTable(tableName);
 
   if (!table) {
     return NextResponse.json({ error: "Unknown table." }, { status: 404 });
@@ -78,7 +80,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const { data, error } = await supabase
       .from(table)
       .update(payload)
-      .eq("id", params.id)
+      .eq("id", id)
       .select()
       .maybeSingle();
 
@@ -97,7 +99,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_: Request, { params }: RouteParams) {
-  const table = getCrudTable(params.table);
+  const { table: tableName, id } = await params;
+  const table = getCrudTable(tableName);
 
   if (!table) {
     return NextResponse.json({ error: "Unknown table." }, { status: 404 });
@@ -110,7 +113,7 @@ export async function DELETE(_: Request, { params }: RouteParams) {
       await requireSuperAdmin(supabase);
     }
 
-    const { error } = await supabase.from(table).delete().eq("id", params.id);
+    const { error } = await supabase.from(table).delete().eq("id", id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });

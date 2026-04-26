@@ -73,7 +73,7 @@ export default function ResearchCharts({
                 ))}
               </Pie>
               <Tooltip
-                formatter={(v: number) => v.toLocaleString("fr-TN")}
+                formatter={(v) => typeof v === "number" ? v.toLocaleString("fr-TN") : v}
                 contentStyle={{
                   fontSize: 12,
                   border: "0.5px solid #003850/20",
@@ -122,7 +122,7 @@ export default function ResearchCharts({
               width={36}
             />
             <Tooltip
-              formatter={(v: number) => v.toLocaleString("fr-TN")}
+              formatter={(v) => typeof v === "number" ? v.toLocaleString("fr-TN") : v}
               contentStyle={{
                 fontSize: 12,
                 border: "0.5px solid rgba(0,56,80,0.2)",

@@ -44,7 +44,7 @@ export default async function UcarReports() {
 		);
 	}
 
-	const reports = (data ?? []) as ReportRow[];
+	const reports = (data ?? []) as unknown as ReportRow[];
 	const totalReports = reports.length;
 	const completedCount = reports.filter((item) => item.status === "completed").length;
 	const failedCount = reports.filter((item) => item.status === "failed").length;
