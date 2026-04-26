@@ -1,28 +1,49 @@
 import Link from "next/link";
 import { requireInstitutionRole } from "@/lib/auth/guards";
 import { getCourses } from "@/lib/data/academic";
-import { createCourse, updateCourse, deleteCourse } from "@/lib/actions/courses";
+import {
+  createCourse,
+  updateCourse,
+  deleteCourse,
+} from "@/lib/actions/courses";
 import type { CourseInput } from "@/lib/actions/courses";
 import CourseTable from "@/components/institution/CourseTable";
 import SectionCard from "@/components/shared/SectionCard";
+import CoursesFilterBar from "../../_components/Coursesfilterbar";
 
 const PAGE_SIZE = 20;
-const WRITE_ROLES = new Set(["super_admin", "institution_admin", "academic_manager"]);
+const WRITE_ROLES = new Set([
+  "super_admin",
+  "institution_admin",
+  "academic_manager",
+]);
 
 export default async function InstitutionCourses({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    semester?: string;
+    year?: string;
+  }>;
 }) {
   const ctx = await requireInstitutionRole();
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, q, semester, year } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
 
   if (!ctx.institutionId) {
-    return <div className="p-8 text-sm text-slate-500">Institution introuvable.</div>;
+    return (
+      <div className="p-8 text-sm text-slate-500">Institution introuvable.</div>
+    );
   }
 
-  const { data: courses, total } = await getCourses(ctx.institutionId, page, PAGE_SIZE);
+  const { data: courses, total } = await getCourses(
+    ctx.institutionId,
+    page,
+    PAGE_SIZE,
+    { search: q, semester, academicYear: year },
+  );
   const canWrite = WRITE_ROLES.has(ctx.role ?? "");
 
   async function handleCreate(_institutionId: string, input: CourseInput) {
@@ -44,7 +65,10 @@ export default async function InstitutionCourses({
     <div className="mx-auto max-w-7xl space-y-6 p-8">
       <div>
         <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
-          <Link href="/institution/academic" className="hover:text-[#003850] transition-colors">
+          <Link
+            href="/institution/academic"
+            className="hover:text-[#003850] transition-colors"
+          >
             Académique
           </Link>
           <span>/</span>
@@ -56,7 +80,16 @@ export default async function InstitutionCourses({
         </p>
       </div>
 
-      <SectionCard title="Liste des cours" description="Triés par année académique et intitulé">
+      <CoursesFilterBar
+        currentQ={q ?? ""}
+        currentSemester={semester ?? ""}
+        currentYear={year ?? ""}
+      />
+
+      <SectionCard
+        title="Liste des cours"
+        description="Triés par année académique et intitulé"
+      >
         <CourseTable
           courses={courses}
           total={total}

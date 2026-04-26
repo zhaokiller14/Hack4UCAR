@@ -13,6 +13,7 @@ import {
 import type { AttendanceInput } from "@/lib/actions/attendance";
 import AttendanceTable from "@/components/institution/AttendanceTable";
 import SectionCard from "@/components/shared/SectionCard";
+import AttendanceFilterBar from "../../_components/Attendancefilterbar";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -24,10 +25,16 @@ const WRITE_ROLES = new Set([
 export default async function InstitutionAttendance({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    present?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }>;
 }) {
   const ctx = await requireInstitutionRole();
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, q, present, dateFrom, dateTo } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
 
   if (!ctx.institutionId) {
@@ -36,12 +43,19 @@ export default async function InstitutionAttendance({
     );
   }
 
-  const [{ data: attendance, total }, students, courses] =
-    await Promise.all([
-      getAttendanceRecords(ctx.institutionId, page, PAGE_SIZE),
-      getStudentSelectOptions(ctx.institutionId),
-      getCourseSelectOptions(ctx.institutionId),
-    ]);
+  const presentFilter =
+    present === "true" ? true : present === "false" ? false : undefined;
+
+  const [{ data: attendance, total }, students, courses] = await Promise.all([
+    getAttendanceRecords(ctx.institutionId, page, PAGE_SIZE, {
+      search: q,
+      present: presentFilter,
+      dateFrom,
+      dateTo,
+    }),
+    getStudentSelectOptions(ctx.institutionId),
+    getCourseSelectOptions(ctx.institutionId),
+  ]);
 
   const canWrite = WRITE_ROLES.has(ctx.role ?? "");
 
@@ -78,6 +92,13 @@ export default async function InstitutionAttendance({
           {total} enregistrement{total !== 1 ? "s" : ""}
         </p>
       </div>
+
+      <AttendanceFilterBar
+        currentQ={q ?? ""}
+        currentPresent={present ?? ""}
+        currentDateFrom={dateFrom ?? ""}
+        currentDateTo={dateTo ?? ""}
+      />
 
       <SectionCard
         title="Présences"
