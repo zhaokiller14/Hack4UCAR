@@ -1,4 +1,5 @@
 import { requireInstitutionRole } from "@/lib/auth/guards";
+import Link from "next/link";
 import { getStudentSelectOptions } from "@/lib/data/academic";
 import { getEmploymentKpis } from "@/lib/data/employment";
 import { getStudentJobs } from "@/lib/data/employment";
@@ -11,6 +12,8 @@ import type { StudentJobInput } from "@/lib/actions/employment";
 import EmploymentTable from "@/components/institution/EmploymentTable";
 import SectionCard from "@/components/shared/SectionCard";
 import ExportButton from "@/components/shared/ExportButton";
+import { Button } from "@/components/ui/button";
+import { FR, t } from "@/lib/i18n";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
 
@@ -98,13 +101,21 @@ export default async function InstitutionEmploymentDashboard({
 
   return (
     <>
-      <DomainDashboardPage {...base} kpis={kpis} />
+      <DomainDashboardPage
+        {...base}
+        kpis={kpis}
+        action={
+          <Button asChild variant="outline">
+            <Link href="/institution/employment/forecast">Forecast Results</Link>
+          </Button>
+        }
+      />
 
       <div className="space-y-6 px-8 pb-8">
         <SectionCard
           title="Liste des emplois"
           description="Emplois des diplomes lies aux etudiants"
-          action={<ExportButton filename="emplois-diplomes" headers={["Date d'emploi","Pays"]} data={studentJobs.map((j) => [j.employment_date, j.job_country])} />}
+          action={<ExportButton filename="emplois-diplomes" headers={["Date d'emploi","Pays","Statut étudiant"]} data={studentJobs.map((j) => [j.employment_date, j.job_country, j.student_status ? t(FR.studentStatus, j.student_status) : ""]) } />}
         >
           <EmploymentTable
             rows={studentJobs}

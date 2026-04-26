@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 
 type UploadIngestCardProps = {
   institutionId: string;
-  defaultDomain?: string;
 };
 
 type MatchedTableName =
@@ -180,12 +179,10 @@ function mapExtractionToEditable(extraction: ExtractionPayload): EditableEntity[
 async function uploadRawFile(params: {
   file: File;
   institutionId: string;
-  domain: string;
 }): Promise<string> {
   const formData = new FormData();
   formData.append("file", params.file);
   formData.append("institution_id", params.institutionId);
-  formData.append("domain", params.domain);
 
   const response = await fetch("/api/uploads/raw", {
     method: "POST",
@@ -259,9 +256,7 @@ async function verifyEntities(params: {
 
 export default function UploadIngestCard({
   institutionId,
-  defaultDomain = "research",
 }: UploadIngestCardProps) {
-  const [domain, setDomain] = useState(defaultDomain);
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -305,7 +300,6 @@ export default function UploadIngestCard({
       const nextRawUploadId = await uploadRawFile({
         file,
         institutionId,
-        domain,
       });
 
       const extraction = await runExtraction(nextRawUploadId);
@@ -397,24 +391,6 @@ export default function UploadIngestCard({
       </CardHeader>
       <CardContent className="space-y-6">
         <form className="space-y-4" onSubmit={handleUploadAndExtract}>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="institution-id">Institution ID</Label>
-              <Input id="institution-id" value={institutionId} readOnly />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="domain">Domain</Label>
-              <Input
-                id="domain"
-                value={domain}
-                onChange={(event) => setDomain(event.target.value)}
-                placeholder="research"
-                required
-              />
-            </div>
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="source-file">File</Label>
             <Input
