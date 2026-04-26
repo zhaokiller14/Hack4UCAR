@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FR } from "@/lib/i18n";
 import DataTable, { type Column } from "@/components/shared/DataTable";
 import RecordFormModal, {
   type FieldDef,
@@ -31,13 +32,7 @@ type FormState =
   | { mode: "edit"; row: BudgetLineRow }
   | null;
 
-const CATEGORY_OPTIONS = [
-  { value: "maintenance", label: "Maintenance" },
-  { value: "salaries", label: "Salaires" },
-  { value: "equipment", label: "Equipements" },
-  { value: "operations", label: "Operations" },
-  { value: "other", label: "Autre" },
-];
+const CATEGORY_OPTIONS = Object.entries(FR.budgetCategory).map(([v, l]) => ({ value: v, label: l }));
 
 function formatCurrency(value: number) {
   return `${value.toLocaleString("fr-TN")} TND`;
@@ -73,8 +68,8 @@ export default function FinanceBudgetTable({
       ),
     },
     {
-      header: "Categorie",
-      render: (row) => row.category,
+      header: "Catégorie",
+      render: (row) => FR.budgetCategory[row.category as keyof typeof FR.budgetCategory] ?? row.category,
     },
     {
       header: "Alloue",

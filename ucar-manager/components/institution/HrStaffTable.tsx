@@ -7,6 +7,7 @@ import RecordFormModal, {
 } from "@/components/shared/RecordFormModal";
 import type { StaffRow } from "@/lib/data/hr";
 import type { StaffInput } from "@/lib/actions/hr";
+import { FR } from "@/lib/i18n";
 
 type Props = {
   rows: StaffRow[];
@@ -25,25 +26,9 @@ type Props = {
 
 type FormState = { mode: "create" } | { mode: "edit"; row: StaffRow } | null;
 
-const ROLE_OPTIONS = [
-  { value: "teaching", label: "Teaching" },
-  { value: "administrative", label: "Administrative" },
-  { value: "technical", label: "Technical" },
-  { value: "research", label: "Research" },
-];
-
-const CONTRACT_OPTIONS = [
-  { value: "", label: "—" },
-  { value: "permanent", label: "Permanent" },
-  { value: "fixed_term", label: "Fixed term" },
-  { value: "part_time", label: "Part time" },
-  { value: "visiting", label: "Visiting" },
-];
-
-const ACTIVE_OPTIONS = [
-  { value: "true", label: "Actif" },
-  { value: "false", label: "Inactif" },
-];
+const ROLE_OPTIONS = Object.entries(FR.staffRole).map(([v, l]) => ({ value: v, label: l }));
+const CONTRACT_OPTIONS = [{ value: "", label: "—" }, ...Object.entries(FR.contractType).map(([v, l]) => ({ value: v, label: l }))];
+const ACTIVE_OPTIONS = Object.entries(FR.activeStatus).map(([v, l]) => ({ value: v, label: l }));
 
 export default function HrStaffTable({
   rows,
@@ -70,16 +55,16 @@ export default function HrStaffTable({
       ),
     },
     {
-      header: "Role",
-      render: (row) => row.role_type,
+      header: "Rôle",
+      render: (row) => FR.staffRole[row.role_type as keyof typeof FR.staffRole] ?? row.role_type,
     },
     {
-      header: "Departement",
+      header: "Département",
       render: (row) => row.department ?? "—",
     },
     {
       header: "Contrat",
-      render: (row) => row.contract_type ?? "—",
+      render: (row) => row.contract_type ? (FR.contractType[row.contract_type as keyof typeof FR.contractType] ?? row.contract_type) : "—",
     },
     {
       header: "Statut",

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FR } from "@/lib/i18n";
 import { requireInstitutionRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { computeAndUpsertAlerts } from "@/lib/alerts/compute";
@@ -230,7 +231,7 @@ export default async function InstitutionDashboard() {
             <div className="flex items-center gap-2 flex-1">
               {SEVERITY_ORDER.filter((s) => alertCounts[s]).map((s) => (
                 <span key={s} className={`inline-flex items-center rounded-sm border px-2 py-0.5 text-[11px] font-semibold ${SEVERITY_STYLES[s]}`}>
-                  {alertCounts[s]} {s}
+                  {alertCounts[s]} {FR.severity[s]}
                 </span>
               ))}
             </div>

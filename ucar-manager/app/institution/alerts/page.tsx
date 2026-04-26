@@ -4,6 +4,7 @@ import { computeAndUpsertAlerts } from "@/lib/alerts/compute";
 import { acknowledgeAlert } from "@/lib/actions/alerts";
 import SeverityBadge from "@/components/shared/SeverityBadge";
 import SectionCard from "@/components/shared/SectionCard";
+import { FR } from "@/lib/i18n";
 
 type AlertRow = {
   id: string;
@@ -15,17 +16,6 @@ type AlertRow = {
   message: string;
   is_acknowledged: boolean;
   triggered_at: string;
-};
-
-const DOMAIN_FR: Record<string, string> = {
-  academic: "Académique",
-  finance: "Finance",
-  hr: "RH",
-  research: "Recherche",
-  esg: "ESG",
-  employment: "Emploi",
-  infrastructure: "Infrastructure",
-  partnerships: "Partenariats",
 };
 
 export default async function InstitutionAlerts() {
@@ -125,7 +115,7 @@ function AlertTable({
                 <SeverityBadge severity={alert.severity} />
               </td>
               <td className="px-4 py-3 text-slate-600">
-                {DOMAIN_FR[alert.kpi_domain] ?? alert.kpi_domain}
+                {FR.kpiDomain[alert.kpi_domain as keyof typeof FR.kpiDomain] ?? alert.kpi_domain}
               </td>
               <td className="px-4 py-3 font-mono text-xs text-slate-500">{alert.kpi_key}</td>
               <td className="px-4 py-3 font-medium text-[#1B1C1A]">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { FR } from "@/lib/i18n";
 import DataTable, { type Column } from "@/components/shared/DataTable";
 import RecordFormModal, {
   type FieldDef,
@@ -34,10 +35,7 @@ type FormState =
   | { mode: "edit"; row: StaffTrainingRow }
   | null;
 
-const COMPLETED_OPTIONS = [
-  { value: "true", label: "Complete" },
-  { value: "false", label: "En cours" },
-];
+const COMPLETED_OPTIONS = Object.entries(FR.trainingStatus).map(([v, l]) => ({ value: v, label: l }));
 
 export default function HrStaffTrainingTable({
   rows,
@@ -81,7 +79,7 @@ export default function HrStaffTrainingTable({
       render: (row) =>
         row.completed ? (
           <span className="inline-flex items-center rounded-sm border border-green-200 bg-green-100 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-green-700">
-            Complete
+            Complété
           </span>
         ) : (
           <span className="inline-flex items-center rounded-sm border border-yellow-200 bg-yellow-100 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-yellow-700">

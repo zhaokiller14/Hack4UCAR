@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FR } from "@/lib/i18n";
 import DataTable, { type Column } from "@/components/shared/DataTable";
 import RecordFormModal, {
   type FieldDef,
@@ -31,17 +32,8 @@ type FormState =
   | { mode: "edit"; row: PartnershipRow }
   | null;
 
-const TYPE_OPTIONS = [
-  { value: "academic", label: "Academique" },
-  { value: "industry", label: "Industrie" },
-  { value: "government", label: "Gouvernement" },
-  { value: "ngo", label: "ONG" },
-];
-
-const ACTIVE_OPTIONS = [
-  { value: "true", label: "Actif" },
-  { value: "false", label: "Inactif" },
-];
+const TYPE_OPTIONS = Object.entries(FR.partnershipType).map(([v, l]) => ({ value: v, label: l }));
+const ACTIVE_OPTIONS = Object.entries(FR.activeStatus).map(([v, l]) => ({ value: v, label: l }));
 
 function formatDate(dateStr: string | null) {
   if (!dateStr) return "—";
@@ -50,7 +42,7 @@ function formatDate(dateStr: string | null) {
 }
 
 function getTypeLabel(type: string): string {
-  return TYPE_OPTIONS.find((o) => o.value === type)?.label ?? type;
+  return FR.partnershipType[type as keyof typeof FR.partnershipType] ?? type;
 }
 
 const STATUS_STYLES: Record<string, string> = {

@@ -7,6 +7,7 @@ import RecordFormModal, {
 } from "@/components/shared/RecordFormModal";
 import type { ResearchProjectRow } from "@/lib/data/research";
 import type { ResearchProjectInput } from "@/lib/actions/research";
+import { FR } from "@/lib/i18n";
 
 type Props = {
   rows: ResearchProjectRow[];
@@ -31,11 +32,7 @@ type FormState =
   | { mode: "edit"; row: ResearchProjectRow }
   | null;
 
-const STATUS_OPTIONS = [
-  { value: "active", label: "Actif" },
-  { value: "completed", label: "Termine" },
-  { value: "cancelled", label: "Annule" },
-];
+const STATUS_OPTIONS = Object.entries(FR.researchStatus).map(([v, l]) => ({ value: v, label: l }));
 
 function formatFunding(value: number | null) {
   if (value === null) return "—";
@@ -72,7 +69,7 @@ export default function ResearchProjectsTable({
     },
     {
       header: "Statut",
-      render: (row) => row.status,
+      render: (row) => FR.researchStatus[row.status as keyof typeof FR.researchStatus] ?? row.status,
     },
     {
       header: "Publications",
