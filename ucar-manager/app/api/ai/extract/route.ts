@@ -152,11 +152,12 @@ function toMatchedTableName(value: unknown): MatchedTableName {
     return null;
   }
 
-  const matched = (MATCHED_TABLE_NAMES as readonly string[]).includes(value);
+  const normalized = value.toLowerCase().replace(/\s+/g, "_");
+  const matched = (MATCHED_TABLE_NAMES as readonly string[]).includes(normalized);
   if (!matched) {
     log("warn", "toMatchedTableName: value not in allowed table list", { value });
   }
-  return matched ? (value as MatchedTableName) : null;
+  return matched ? (normalized as MatchedTableName) : null;
 }
 
 function normalizeSource(value: unknown): ExtractSource {
