@@ -21,6 +21,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { DEFAULT_INSTITUTION_LOGO } from "@/app/constants/CONSTANTS";
 
 const NAV = [
 	{ href: "/institution/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
@@ -40,9 +41,16 @@ const NAV = [
 type InstitutionSidebarProps = {
 	userName: string;
 	userRole: string;
+	institutionLogo?: string;
+	institutionId?: string;
 };
 
-export default function InstitutionSidebar({ userName, userRole }: InstitutionSidebarProps) {
+export default function InstitutionSidebar({ 
+	userName, 
+	userRole, 
+	institutionLogo = DEFAULT_INSTITUTION_LOGO,
+	institutionId 
+}: InstitutionSidebarProps) {
 	const pathname = usePathname();
 	const router = useRouter();
 
@@ -56,9 +64,9 @@ export default function InstitutionSidebar({ userName, userRole }: InstitutionSi
 	return (
 		<aside className="flex h-full w-64 shrink-0 flex-col border-r border-slate-200 bg-[#F7F6F3]">
 			<div className="flex items-center gap-3 border-b border-slate-200 px-5 py-5">
-				<Image
-					src="/ucar-logo.png"
-					alt="UCAR Logo"
+				<img
+					src={institutionLogo}
+					alt={institutionId ? `${institutionId} Logo` : "UCAR Logo"}
 					width={80}
 					height={60}
 					className="shrink-0 rounded-lg"

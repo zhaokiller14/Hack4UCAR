@@ -23,9 +23,22 @@ const STEPS = [
 ];
 
 // Mock institution ID - in production, get from auth context
+// This would come from the user's session/auth
 const MOCK_INSTITUTION_ID = "inst_001";
 
 type PeriodType = "monthly" | "quarterly" | "annual";
+
+// Domain options for the upload
+const DOMAIN_OPTIONS = [
+  { value: "finance", label: "Finance" },
+  { value: "academic", label: "Academic" },
+  { value: "hr", label: "Human Resources" },
+  { value: "infrastructure", label: "Infrastructure" },
+  { value: "research", label: "Research" },
+  { value: "partnerships", label: "Partnerships" },
+  { value: "employment", label: "Employment" },
+  { value: "esg", label: "ESG" },
+];
 
 export default function IngestionPage() {
   const [currentStep, setCurrentStep] = React.useState(1);
@@ -44,6 +57,10 @@ export default function IngestionPage() {
   const [periodEnd, setPeriodEnd] = React.useState("");
   const [academicYear, setAcademicYear] = React.useState("");
   const [fiscalYear, setFiscalYear] = React.useState("");
+  const [selectedDomain, setSelectedDomain] = React.useState("finance");
+
+  // Track the raw upload ID from the colleague's upload endpoint
+  const [rawUploadId, setRawUploadId] = React.useState<string | null>(null);
 
   // Success data
   const [successData, setSuccessData] = React.useState({
@@ -68,6 +85,8 @@ export default function IngestionPage() {
     setPeriodEnd("");
     setAcademicYear("");
     setFiscalYear("");
+    setSelectedDomain("finance");
+    setRawUploadId(null);
     setSuccessData({
       fileName: "",
       domainsUpdated: [],
@@ -84,13 +103,50 @@ export default function IngestionPage() {
   const handleFileRemove = () => {
     setSelectedFile(null);
     setUploadError(null);
+    setRawUploadId(null);
+  };
+
+  // Upload file using colleague's endpoint
+  const uploadFileToStorage = async () => {
+    if (!selectedFile) return null;
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("institution_id", MOCK_INSTITUTION_ID);
+      formData.append("domain", selectedDomain);
+
+      const response = await fetch("/api/uploads/raw", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Upload failed");
+      }
+
+      // Store the raw upload ID for later use
+      setRawUploadId(result.data.raw_upload.id);
+      return result.data.raw_upload;
+    } catch (error) {
+      // If the upload endpoint fails (e.g., auth issues), we'll fall back to direct extraction
+      console.warn("Upload to storage failed, using direct extraction:", error);
+      return null;
+    }
   };
 
   // Navigate to step 2 (configure period)
-  const handleNextToConfig = () => {
-    if (selectedFile) {
-      setCurrentStep(2);
+  const handleNextToConfig = async () => {
+    if (!selectedFile) {
+      setUploadError("Please select a file first.");
+      return;
     }
+
+    // Try to upload file to storage first
+    await uploadFileToStorage();
+    setCurrentStep(2);
   };
 
   // Start AI extraction
@@ -105,6 +161,8 @@ export default function IngestionPage() {
     setCurrentStep(3);
 
     try {
+      // Use our simulated extraction endpoint
+      // In production, this would call /api/ai/extract with the raw_upload_id
       const formData = new FormData();
       formData.append("file", selectedFile);
 
@@ -207,6 +265,23 @@ export default function IngestionPage() {
               </p>
             </div>
 
+            {/* Domain selection */}
+            <div className="mb-6">
+              <Label htmlFor="domain">Data Domain</Label>
+              <select
+                id="domain"
+                value={selectedDomain}
+                onChange={(e) => setSelectedDomain(e.target.value)}
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring mt-2"
+              >
+                {DOMAIN_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <FileUpload
               selectedFile={selectedFile}
               onFileSelect={handleFileSelect}
@@ -247,14 +322,19 @@ export default function IngestionPage() {
             {/* File preview */}
             <div className="flex items-center gap-3 p-3 rounded-lg bg-[#1B4F6B]/5 border border-[#1B4F6B]/20">
               <FileText className="w-5 h-5 text-[#1B4F6B]" />
-              <span className="text-sm font-medium text-[#0D2B3E]">
-                {selectedFile?.name}
-              </span>
+              <div className="flex-1">
+                <span className="text-sm font-medium text-[#0D2B3E]">
+                  {selectedFile?.name}
+                </span>
+                <p className="text-xs text-gray-500">
+                  Domain: {DOMAIN_OPTIONS.find(d => d.value === selectedDomain)?.label}
+                </p>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setCurrentStep(1)}
-                className="ml-auto text-gray-500"
+                className="text-gray-500"
               >
                 Change file
               </Button>
@@ -276,7 +356,7 @@ export default function IngestionPage() {
                       id="periodType"
                       value={periodType}
                       onChange={(e) => setPeriodType(e.target.value as PeriodType)}
-                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring mt-2"
                     >
                       <option value="monthly">Monthly</option>
                       <option value="quarterly">Quarterly</option>
