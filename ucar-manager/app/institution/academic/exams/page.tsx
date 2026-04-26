@@ -6,6 +6,7 @@ import { createExam, deleteExam, updateExam } from "@/lib/actions/exams";
 import type { ExamInput } from "@/lib/actions/exams";
 import ExamTable from "@/components/institution/ExamTable";
 import SectionCard from "@/components/shared/SectionCard";
+import ExamsFilterBar from "../../_components/Examsfilterbar";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -17,10 +18,15 @@ const WRITE_ROLES = new Set([
 export default async function InstitutionExams({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    type?: string;
+    year?: string;
+  }>;
 }) {
   const ctx = await requireInstitutionRole();
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, q, type, year } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
 
   if (!ctx.institutionId) {
@@ -30,7 +36,11 @@ export default async function InstitutionExams({
   }
 
   const [{ data: exams, total }, courses] = await Promise.all([
-    getExams(ctx.institutionId, page, PAGE_SIZE),
+    getExams(ctx.institutionId, page, PAGE_SIZE, {
+      search: q,
+      type,
+      academicYear: year,
+    }),
     getCourseSelectOptions(ctx.institutionId),
   ]);
 
@@ -69,6 +79,12 @@ export default async function InstitutionExams({
           {total} examen{total !== 1 ? "s" : ""}
         </p>
       </div>
+
+      <ExamsFilterBar
+        currentQ={q ?? ""}
+        currentType={type ?? ""}
+        currentYear={year ?? ""}
+      />
 
       <SectionCard
         title="Liste des examens"
