@@ -420,17 +420,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: rawUploadUpdateError.message }, { status: 400 });
     }
 
-    const { error: extractedRecordError } = await supabase.from("extracted_records").insert({
-      raw_upload_id: raw_upload_id,
-      extracted_data: normalized,
-      confidence_score: null,
-    });
-
-    if (extractedRecordError) {
-      // Non-blocking for review flow; keep extraction result available.
-      console.error("[Extract Route] extracted_records insert failed", extractedRecordError.message);
-    }
-
     return NextResponse.json(
       {
         data: {
