@@ -9,6 +9,7 @@ import {
 import type { StudentInput } from "@/lib/actions/students";
 import StudentTable from "@/components/institution/StudentTable";
 import SectionCard from "@/components/shared/SectionCard";
+import StudentsFilterBar from "../../_components/Studentsfilterbar";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -17,13 +18,26 @@ const WRITE_ROLES = new Set([
   "academic_manager",
 ]);
 
+const STATUS_OPTIONS = [
+  { value: "active", label: "Actif" },
+  { value: "graduated", label: "Diplômé" },
+  { value: "dropped", label: "Abandonné" },
+  { value: "suspended", label: "Suspendu" },
+  { value: "transferred", label: "Transféré" },
+];
+
 export default async function InstitutionStudents({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    status?: string;
+    year?: string;
+  }>;
 }) {
   const ctx = await requireInstitutionRole();
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, q, status, year } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
 
   if (!ctx.institutionId) {
@@ -36,6 +50,7 @@ export default async function InstitutionStudents({
     ctx.institutionId,
     page,
     PAGE_SIZE,
+    { search: q, status, year: year ? Number(year) : undefined },
   );
   const canWrite = WRITE_ROLES.has(ctx.role ?? "");
 
@@ -79,6 +94,13 @@ export default async function InstitutionStudents({
           </p>
         </div>
       </div>
+
+      <StudentsFilterBar
+        statusOptions={STATUS_OPTIONS}
+        currentQ={q ?? ""}
+        currentStatus={status ?? ""}
+        currentYear={year ?? ""}
+      />
 
       <SectionCard
         title="Liste des étudiants"

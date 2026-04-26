@@ -12,22 +12,45 @@ export type StudentRow = {
   graduation_date: string | null;
 };
 
+export type StudentFilters = {
+  search?: string;
+  status?: string;
+  year?: number;
+};
+
 export async function getStudents(
   institutionId: string,
   page: number,
   pageSize: number,
+  filters: StudentFilters = {},
 ): Promise<{ data: StudentRow[]; total: number }> {
   const supabase = await createClient();
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("students")
     .select(
       "id, student_code, full_name, email, specialization, current_year, status, enrollment_date, graduation_date",
       { count: "exact" },
     )
-    .eq("institution_id", institutionId)
+    .eq("institution_id", institutionId);
+
+  if (filters.search?.trim()) {
+    query = query.or(
+      `full_name.ilike.%${filters.search.trim()}%,specialization.ilike.%${filters.search.trim()}%`,
+    );
+  }
+
+  if (filters.status) {
+    query = query.eq("status", filters.status);
+  }
+
+  if (filters.year !== undefined) {
+    query = query.eq("current_year", filters.year);
+  }
+
+  const { data, error, count } = await query
     .order("full_name", { ascending: true })
     .range(from, to);
 
@@ -56,22 +79,45 @@ export type CourseRow = {
   academic_year: string;
 };
 
+export type CourseFilters = {
+  search?: string;
+  semester?: string;
+  academicYear?: string;
+};
+
 export async function getCourses(
   institutionId: string,
   page: number,
   pageSize: number,
+  filters: CourseFilters = {},
 ): Promise<{ data: CourseRow[]; total: number }> {
   const supabase = await createClient();
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("courses")
     .select(
       "id, code, title, specialization, year_level, credits, semester, academic_year",
       { count: "exact" },
     )
-    .eq("institution_id", institutionId)
+    .eq("institution_id", institutionId);
+
+  if (filters.search?.trim()) {
+    query = query.or(
+      `title.ilike.%${filters.search.trim()}%,specialization.ilike.%${filters.search.trim()}%`,
+    );
+  }
+
+  if (filters.semester) {
+    query = query.eq("semester", filters.semester);
+  }
+
+  if (filters.academicYear?.trim()) {
+    query = query.eq("academic_year", filters.academicYear.trim());
+  }
+
+  const { data, error, count } = await query
     .order("academic_year", { ascending: false })
     .order("title", { ascending: true })
     .range(from, to);
