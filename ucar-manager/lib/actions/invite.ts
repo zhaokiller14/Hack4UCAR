@@ -87,3 +87,111 @@ export async function deactivateUser(
   revalidatePath("/ucar/settings");
   return {};
 }
+
+// ── Institution-admin actions ──────────────────────────────────────────────
+
+const INVITABLE_ROLES = new Set([
+  "hr_manager",
+  "finance_manager",
+  "academic_manager",
+  "research_manager",
+  "partnerships_manager",
+  "esg_manager",
+  "infrastructure_manager",
+  "viewer",
+]);
+
+export async function inviteInstitutionMember(
+  formData: FormData,
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Non authentifié." };
+
+  const { data: caller } = await supabase
+    .from("users")
+    .select("role, institution_id, organization_id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (caller?.role !== "institution_admin") return { error: "Accès refusé." };
+  if (!caller.institution_id || !caller.organization_id)
+    return { error: "Institution introuvable sur votre compte." };
+
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const role  = String(formData.get("role") ?? "").trim();
+
+  if (!email)               return { error: "Email requis." };
+  if (!INVITABLE_ROLES.has(role)) return { error: "Rôle invalide." };
+
+  const headersList = await headers();
+  const origin =
+    headersList.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
+
+  const { data: invited, error: inviteError } =
+    await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+      redirectTo: `${origin}/auth/callback`,
+      data: {
+        role,
+        institution_id: caller.institution_id,
+        organization_id: caller.organization_id,
+      },
+    });
+
+  if (inviteError) return { error: inviteError.message };
+
+  const { error: insertError } = await supabaseAdmin.from("users").insert({
+    id: invited.user.id,
+    organization_id: caller.organization_id,
+    institution_id: caller.institution_id,
+    full_name: "",
+    role,
+    is_active: false,
+  });
+
+  if (insertError) {
+    await supabaseAdmin.auth.admin.deleteUser(invited.user.id);
+    return { error: insertError.message };
+  }
+
+  revalidatePath("/institution/settings");
+  return {};
+}
+
+export async function deactivateInstitutionMember(
+  userId: string,
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Non authentifié." };
+
+  const { data: caller } = await supabase
+    .from("users")
+    .select("role, institution_id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (caller?.role !== "institution_admin") return { error: "Accès refusé." };
+
+  // Ensure the target belongs to the same institution
+  const { data: target } = await supabase
+    .from("users")
+    .select("institution_id, role")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (target?.institution_id !== caller.institution_id)
+    return { error: "Cet utilisateur n'appartient pas à votre établissement." };
+
+  if (target?.role === "institution_admin")
+    return { error: "Vous ne pouvez pas désactiver un autre directeur." };
+
+  const { error } = await supabaseAdmin
+    .from("users")
+    .update({ is_active: false })
+    .eq("id", userId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/institution/settings");
+  return {};
+}
