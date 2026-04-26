@@ -22,6 +22,7 @@ export type DataTableProps<T extends { id: string }> = {
   total: number;
   page: number;
   pageSize: number;
+  pageParamKey?: string;
   columns: Column<T>[];
   canWrite: boolean;
   addLabel?: string;
@@ -36,6 +37,7 @@ export default function DataTable<T extends { id: string }>({
   total,
   page,
   pageSize,
+  pageParamKey = "page",
   columns,
   canWrite,
   addLabel = "+ Ajouter",
@@ -48,13 +50,16 @@ export default function DataTable<T extends { id: string }>({
   const searchParams = useSearchParams();
   const totalPages = Math.ceil(total / pageSize);
 
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; label: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    label: string;
+  } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   function pageHref(p: number) {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(p));
+    params.set(pageParamKey, String(p));
     return `${pathname}?${params.toString()}`;
   }
 
@@ -112,13 +117,19 @@ export default function DataTable<T extends { id: string }>({
           <tbody className="divide-y divide-slate-100 bg-white">
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={colCount} className="px-4 py-8 text-center text-sm text-slate-400">
+                <td
+                  colSpan={colCount}
+                  className="px-4 py-8 text-center text-sm text-slate-400"
+                >
                   Aucun enregistrement trouvé.
                 </td>
               </tr>
             ) : (
               rows.map((row) => (
-                <tr key={row.id} className="hover:bg-slate-50 transition-colors">
+                <tr
+                  key={row.id}
+                  className="hover:bg-slate-50 transition-colors"
+                >
                   {columns.map((col) => (
                     <td key={col.header} className="px-4 py-3 text-slate-600">
                       {col.render(row)}
@@ -139,7 +150,9 @@ export default function DataTable<T extends { id: string }>({
                           onClick={() =>
                             setDeleteTarget({
                               id: row.id,
-                              label: getDeleteLabel ? getDeleteLabel(row) : row.id,
+                              label: getDeleteLabel
+                                ? getDeleteLabel(row)
+                                : row.id,
                             })
                           }
                           className="text-xs text-red-600 hover:underline font-medium"
@@ -181,15 +194,19 @@ export default function DataTable<T extends { id: string }>({
 
       <Dialog
         open={!!deleteTarget}
-        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
       >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirmer la suppression</DialogTitle>
             <DialogDescription>
               Êtes-vous sûr de vouloir supprimer{" "}
-              <span className="font-medium text-[#1B1C1A]">{deleteTarget?.label}</span>
-              {" "}? Cette action est irréversible.
+              <span className="font-medium text-[#1B1C1A]">
+                {deleteTarget?.label}
+              </span>{" "}
+              ? Cette action est irréversible.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
