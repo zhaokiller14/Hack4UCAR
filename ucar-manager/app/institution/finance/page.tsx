@@ -11,6 +11,7 @@ import SectionCard from "@/components/shared/SectionCard";
 import ExportButton from "@/components/shared/ExportButton";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
+import FinanceCharts from "../_components/FinanceCharts";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set(["super_admin", "institution_admin", "finance_manager"]);
@@ -96,6 +97,7 @@ export default async function InstitutionFinanceDashboard({
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
 
+      <FinanceCharts lines={budgetLines} />
       <div className="space-y-6 px-8 pb-8 pt-0">
         <SectionCard title="Lignes budgétaires" description="Répartition par année fiscale et département" action={<ExportButton filename="budget" headers={["Année fiscale","Département","Catégorie","Alloué (TND)","Consommé (TND)","Description"]} data={budgetLines.map((b) => [b.fiscal_year,b.department,b.category,b.allocated,b.consumed,b.description ?? ""])} />}>
           <FinanceBudgetTable

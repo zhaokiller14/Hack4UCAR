@@ -4,6 +4,7 @@ import { getRecentAttendance } from "@/lib/data/attendance";
 import { getExams } from "@/lib/data/exams";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
+import AcademicCharts from "../_components/AcademicCharts";
 import PreviewTable, { type PreviewColumn } from "@/components/institution/PreviewTable";
 import type { StudentRow } from "@/lib/data/academic";
 import type { CourseRow } from "@/lib/data/academic";
@@ -100,7 +101,7 @@ export default async function InstitutionAcademicDashboard() {
   return (
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
-
+      <AcademicCharts rows={kpiRows} />
       <div className="px-8 pb-12 space-y-4 -mt-2">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <PreviewTable
