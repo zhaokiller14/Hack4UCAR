@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { requireInstitutionRole } from "@/lib/auth/guards";
-import { getCourseSelectOptions } from "@/lib/data/academic";
-import { getExams } from "@/lib/data/exams";
-import { createExam, deleteExam, updateExam } from "@/lib/actions/exams";
-import type { ExamInput } from "@/lib/actions/exams";
+import { getCourseSelectOptions, getStudentSelectOptions } from "@/lib/data/academic";
+import { getExams, getExamResults, getExamSelectOptions } from "@/lib/data/exams";
+import { createExam, deleteExam, updateExam, createExamResult, deleteExamResult, updateExamResult } from "@/lib/actions/exams";
+import type { ExamInput, ExamResultInput } from "@/lib/actions/exams";
 import ExamTable from "@/components/institution/ExamTable";
+import ExamResultTable from "@/components/institution/ExamResultTable";
 import SectionCard from "@/components/shared/SectionCard";
 import ExamsFilterBar from "../../_components/Examsfilterbar";
 import ExportButton from "@/components/shared/ExportButton";
@@ -26,11 +27,13 @@ export default async function InstitutionExams({
     q?: string;
     type?: string;
     year?: string;
+    results_page?: string;
   }>;
 }) {
   const ctx = await requireInstitutionRole();
-  const { page: pageParam, q, type, year } = await searchParams;
+  const { page: pageParam, q, type, year, results_page: resultsPageParam } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
+  const resultsPage = Math.max(1, parseInt(resultsPageParam ?? "1", 10));
 
   if (!ctx.institutionId) {
     return (
@@ -38,14 +41,18 @@ export default async function InstitutionExams({
     );
   }
 
-  const [{ data: exams, total }, courses] = await Promise.all([
-    getExams(ctx.institutionId, page, PAGE_SIZE, {
+  const examsData = await getExams(ctx.institutionId, page, PAGE_SIZE, {
       search: q,
       type,
       academicYear: year,
-    }),
-    getCourseSelectOptions(ctx.institutionId),
-  ]);
+    });
+    const courses = await getCourseSelectOptions(ctx.institutionId);
+    const examResultsData = await getExamResults(ctx.institutionId, resultsPage, PAGE_SIZE);
+    const students = await getStudentSelectOptions(ctx.institutionId);
+    const examsSelect = await getExamSelectOptions(ctx.institutionId);
+
+    const { data: exams, total } = examsData;
+    const { data: examResults, total: resultsTotal } = examResultsData;
 
   const canWrite = WRITE_ROLES.has(ctx.role ?? "");
 
@@ -62,6 +69,21 @@ export default async function InstitutionExams({
   async function handleDelete(examId: string) {
     "use server";
     return deleteExam(examId);
+  }
+
+  async function handleCreateResult(_institutionId: string, input: ExamResultInput) {
+    "use server";
+    return createExamResult(ctx.institutionId!, input);
+  }
+
+  async function handleUpdateResult(examResultId: string, input: ExamResultInput) {
+    "use server";
+    return updateExamResult(examResultId, input);
+  }
+
+  async function handleDeleteResult(examResultId: string) {
+    "use server";
+    return deleteExamResult(examResultId);
   }
 
   return (
@@ -105,6 +127,25 @@ export default async function InstitutionExams({
           onCreate={handleCreate}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
+        />
+      </SectionCard>
+
+      <SectionCard
+        title="Résultats d'examens"
+        description="Notes et scores des étudiants"
+      >
+        <ExamResultTable
+          examResults={examResults}
+          total={resultsTotal}
+          page={resultsPage}
+          pageSize={PAGE_SIZE}
+          institutionId={ctx.institutionId}
+          canWrite={canWrite}
+          exams={examsSelect}
+          students={students}
+          onCreate={handleCreateResult}
+          onUpdate={handleUpdateResult}
+          onDelete={handleDeleteResult}
         />
       </SectionCard>
     </div>

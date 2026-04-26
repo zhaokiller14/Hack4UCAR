@@ -81,3 +81,73 @@ function sanitize(input: ExamInput) {
     semester: input.semester?.trim() || null,
   };
 }
+
+export type ExamResultInput = {
+  exam_id: string;
+  student_id: string;
+  score?: number;
+  passed?: boolean;
+  absent?: boolean;
+  note?: string;
+};
+
+export async function createExamResult(
+  institutionId: string,
+  input: ExamResultInput,
+): Promise<{ error?: string }> {
+  await requireWriteAccess();
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("exam_results").insert({
+    institution_id: institutionId,
+    ...sanitizeResult(input),
+  });
+
+  if (error) return { error: error.message };
+  revalidatePath("/institution/academic/exams");
+  return {};
+}
+
+export async function updateExamResult(
+  examResultId: string,
+  input: ExamResultInput,
+): Promise<{ error?: string }> {
+  await requireWriteAccess();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("exam_results")
+    .update(sanitizeResult(input))
+    .eq("id", examResultId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/institution/academic/exams");
+  return {};
+}
+
+export async function deleteExamResult(
+  examResultId: string,
+): Promise<{ error?: string }> {
+  await requireWriteAccess();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("exam_results")
+    .delete()
+    .eq("id", examResultId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/institution/academic/exams");
+  return {};
+}
+
+function sanitizeResult(input: ExamResultInput) {
+  return {
+    exam_id: input.exam_id,
+    student_id: input.student_id,
+    score: input.score ?? null,
+    passed: input.passed ?? null,
+    absent: input.absent ?? false,
+    note: input.note?.trim() || null,
+  };
+}
