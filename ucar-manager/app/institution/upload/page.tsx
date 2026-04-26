@@ -13,7 +13,7 @@ export default async function InstitutionUploadPage() {
         </p>
       </div>
 
-      <UploadIngestCard institutionId={institutionId ?? ""} defaultDomain="research" />
+      <UploadIngestCard institutionId={institutionId ?? ""} />
     </div>
   );
 }

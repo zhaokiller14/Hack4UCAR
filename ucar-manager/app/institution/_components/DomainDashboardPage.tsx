@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 type KpiCard = {
   title: string;
   value: string;
@@ -9,6 +11,7 @@ type DomainDashboardPageProps = {
   title: string;
   subtitle: string;
   kpis?: KpiCard[];
+  action?: ReactNode;
 };
 
 function TodayDate() {
@@ -24,6 +27,7 @@ export default function DomainDashboardPage({
   title,
   subtitle,
   kpis,
+  action,
 }: DomainDashboardPageProps) {
   return (
     <div className="space-y-6 p-8 pb-4">
@@ -34,6 +38,7 @@ export default function DomainDashboardPage({
             {subtitle} — <TodayDate />
           </p>
         </div>
+        {action ? <div className="shrink-0">{action}</div> : null}
       </div>
 
       {kpis && kpis.length > 0 && (
