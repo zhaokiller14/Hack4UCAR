@@ -11,6 +11,7 @@ export default function SetupAccount() {
   const [email, setEmail] = useState("");
   const [institutionName, setInstitutionName] = useState("");
   const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
@@ -47,6 +48,7 @@ export default function SetupAccount() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim()) { setError("Le nom complet est requis."); return; }
+    if (password.length < 8) { setError("Le mot de passe doit contenir au moins 8 caractères."); return; }
     setLoading(true);
     setError(null);
 
@@ -57,7 +59,11 @@ export default function SetupAccount() {
       return;
     }
 
-    await supabase.auth.updateUser({ data: { full_name: fullName.trim() } });
+    const { error: updateError } = await supabase.auth.updateUser({
+      password,
+      data: { full_name: fullName.trim() },
+    });
+    if (updateError) { setError(updateError.message); setLoading(false); return; }
 
     const { error: dbError } = await supabase
       .from("users")
@@ -113,6 +119,21 @@ export default function SetupAccount() {
                   placeholder="Prénom Nom"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
+                  className="w-full rounded-sm border border-slate-200 bg-white px-3 py-2 text-sm text-[#1B1C1A] focus:border-[#003850] focus:outline-none focus:ring-1 focus:ring-[#003850]/20"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium text-slate-600">
+                  Mot de passe <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  placeholder="Min. 8 caractères"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-sm border border-slate-200 bg-white px-3 py-2 text-sm text-[#1B1C1A] focus:border-[#003850] focus:outline-none focus:ring-1 focus:ring-[#003850]/20"
                 />
               </div>
