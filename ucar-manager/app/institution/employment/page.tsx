@@ -10,6 +10,7 @@ import {
 import type { StudentJobInput } from "@/lib/actions/employment";
 import EmploymentTable from "@/components/institution/EmploymentTable";
 import SectionCard from "@/components/shared/SectionCard";
+import ExportButton from "@/components/shared/ExportButton";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
 
@@ -103,6 +104,7 @@ export default async function InstitutionEmploymentDashboard({
         <SectionCard
           title="Liste des emplois"
           description="Emplois des diplomes lies aux etudiants"
+          action={<ExportButton filename="emplois-diplomes" headers={["Date d'emploi","Pays"]} data={studentJobs.map((j) => [j.employment_date, j.job_country])} />}
         >
           <EmploymentTable
             rows={studentJobs}

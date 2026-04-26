@@ -18,6 +18,7 @@ import type { StaffInput, StaffTrainingInput } from "@/lib/actions/hr";
 import HrStaffTable from "@/components/institution/HrStaffTable";
 import HrStaffTrainingTable from "@/components/institution/HrStaffTrainingTable";
 import SectionCard from "@/components/shared/SectionCard";
+import ExportButton from "@/components/shared/ExportButton";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
 
@@ -148,7 +149,7 @@ export default async function InstitutionHrDashboard({
       <DomainDashboardPage {...base} kpis={kpis} />
 
       <div className="space-y-6 px-8 pb-8">
-        <SectionCard title="Staff" description="Personnel de l'institution">
+        <SectionCard title="Staff" description="Personnel de l'institution" action={<ExportButton filename="personnel" headers={["Code","Nom complet","Email","Rôle","Département","Contrat","Heures/sem","Date embauche","Actif"]} data={staffRows.map((s) => [s.employee_code ?? "",s.full_name,s.email ?? "",s.role_type,s.department ?? "",s.contract_type ?? "",s.teaching_hours_week ?? "",s.hire_date ?? "",s.is_active ? "Oui" : "Non"])} />}>
           <HrStaffTable
             rows={staffRows}
             total={staffTotal}
@@ -165,6 +166,7 @@ export default async function InstitutionHrDashboard({
         <SectionCard
           title="Staff Trainings"
           description="Formations associees au personnel"
+          action={<ExportButton filename="formations-personnel" headers={["Staff ID","Formation ID","Complété","Date complétion"]} data={staffTrainingRows.map((t) => [t.staff_id,t.training_id,t.completed ? "Oui" : "Non",t.completion_date ?? ""])} />}
         >
           <HrStaffTrainingTable
             rows={staffTrainingRows}

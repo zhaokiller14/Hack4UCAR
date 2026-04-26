@@ -10,6 +10,7 @@ import type { CourseInput } from "@/lib/actions/courses";
 import CourseTable from "@/components/institution/CourseTable";
 import SectionCard from "@/components/shared/SectionCard";
 import CoursesFilterBar from "../../_components/Coursesfilterbar";
+import ExportButton from "@/components/shared/ExportButton";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -89,6 +90,7 @@ export default async function InstitutionCourses({
       <SectionCard
         title="Liste des cours"
         description="Triés par année académique et intitulé"
+        action={<ExportButton filename="cours" headers={["Code","Intitulé","Spécialisation","Année acad.","Niveau","Semestre","Crédits"]} data={courses.map((c) => [c.code ?? "",c.title,c.specialization ?? "",c.academic_year,c.year_level ?? "",c.semester ?? "",c.credits ?? ""])} />}
       >
         <CourseTable
           courses={courses}

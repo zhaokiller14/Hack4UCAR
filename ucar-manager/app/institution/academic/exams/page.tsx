@@ -7,6 +7,9 @@ import type { ExamInput } from "@/lib/actions/exams";
 import ExamTable from "@/components/institution/ExamTable";
 import SectionCard from "@/components/shared/SectionCard";
 import ExamsFilterBar from "../../_components/Examsfilterbar";
+import ExportButton from "@/components/shared/ExportButton";
+
+const EXAM_TYPE_FR: Record<string, string> = { midterm: "Partiel", final: "Final", makeup: "Rattrapage" };
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -89,6 +92,7 @@ export default async function InstitutionExams({
       <SectionCard
         title="Liste des examens"
         description="Triés par année académique et date d'examen"
+        action={<ExportButton filename="examens" headers={["Type","Date","Score max","Année acad.","Semestre"]} data={exams.map((e) => [EXAM_TYPE_FR[e.type] ?? e.type, e.exam_date ?? "", e.max_score, e.academic_year, e.semester ?? ""])} />}
       >
         <ExamTable
           exams={exams}

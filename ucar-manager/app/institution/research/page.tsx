@@ -11,6 +11,7 @@ import { getInstitutionDomainDashboard } from "../_components/domainData";
 import RawUploadCard from "@/components/institution/raw-upload-card";
 import SectionCard from "@/components/shared/SectionCard";
 import ResearchProjectsTable from "@/components/institution/ResearchProjectsTable";
+import ExportButton from "@/components/shared/ExportButton";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -116,6 +117,7 @@ export default async function InstitutionResearch({
         <SectionCard
           title="Projets de recherche"
           description="Projets actifs et archives par institution"
+          action={<ExportButton filename="projets-recherche" headers={["Titre","Responsable","Financement","Source","Statut","Publications","Brevets","Début","Fin"]} data={projects.map((r) => [r.title,r.lead_researcher ?? "",r.funding_amount ?? "",r.funding_source ?? "",r.status,r.publications_count,r.patents_filed,r.start_date ?? "",r.end_date ?? ""])} />}
         >
           <ResearchProjectsTable
             rows={projects}

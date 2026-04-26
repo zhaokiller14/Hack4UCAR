@@ -10,6 +10,7 @@ import type { StudentInput } from "@/lib/actions/students";
 import StudentTable from "@/components/institution/StudentTable";
 import SectionCard from "@/components/shared/SectionCard";
 import StudentsFilterBar from "../../_components/Studentsfilterbar";
+import ExportButton from "@/components/shared/ExportButton";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -105,6 +106,7 @@ export default async function InstitutionStudents({
       <SectionCard
         title="Liste des étudiants"
         description="Triés par nom alphabétique"
+        action={<ExportButton filename="etudiants" headers={["Code","Nom complet","Email","Spécialisation","Année","Statut","Inscription","Diplôme"]} data={students.map((s) => [s.student_code ?? "",s.full_name,s.email ?? "",s.specialization ?? "",s.current_year ?? "",s.status,s.enrollment_date ?? "",s.graduation_date ?? ""])} />}
       >
         <StudentTable
           students={students}
