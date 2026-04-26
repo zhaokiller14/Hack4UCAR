@@ -16,6 +16,7 @@ import {
 	AlertTriangle,
 	FileText,
 	Bot,
+	Upload,
 	LogOut,
 } from "lucide-react";
 
@@ -34,6 +35,7 @@ const NAV = [
 	{ href: "/institution/partnerships", label: "Partenariats & mobilité", icon: Handshake },
 	{ href: "/institution/alerts", label: "Alertes", icon: AlertTriangle },
 	{ href: "/institution/reports", label: "Rapports", icon: FileText },
+	{ href: "/institution/upload", label: "Upload & ingestion", icon: Upload },
 	{ href: "/institution/ai-chat", label: "Assistant IA", icon: Bot },
 ];
 
