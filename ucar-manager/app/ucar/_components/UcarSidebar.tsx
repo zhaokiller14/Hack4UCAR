@@ -18,6 +18,7 @@ import {
   Target,
   FileText,
   Megaphone,
+  Settings,
   LogOut,
 } from "lucide-react";
 import { isInstitutionRole, type AppRole } from "@/lib/auth/roles";
@@ -31,6 +32,7 @@ const SUPER_ADMIN_NAV = [
   { href: "/ucar/goals", label: "Objectifs stratégiques", icon: Target },
   { href: "/ucar/reports", label: "Rapports", icon: FileText },
   { href: "/ucar/announcements", label: "Annonces", icon: Megaphone },
+  { href: "/ucar/settings",     label: "Paramètres", icon: Settings },
 ];
 
 const INSTITUTION_NAV = [
