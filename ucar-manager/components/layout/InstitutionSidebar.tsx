@@ -14,6 +14,7 @@ import {
 	Building,
 	Handshake,
 	AlertTriangle,
+	Megaphone,
 	FileText,
 	Bot,
 	LogOut,
@@ -34,6 +35,7 @@ const NAV = [
 	{ href: "/institution/infrastructure", label: "Infrastructure & équipement", icon: Building },
 	{ href: "/institution/partnerships", label: "Partenariats & mobilité", icon: Handshake },
 	{ href: "/institution/alerts", label: "Alertes", icon: AlertTriangle },
+	{ href: "/institution/announcements", label: "Annonces", icon: Megaphone },
 	{ href: "/institution/reports", label: "Rapports", icon: FileText },
 	{ href: "/institution/ai-chat", label: "Assistant IA", icon: Bot },
 ];
