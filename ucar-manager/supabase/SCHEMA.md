@@ -153,9 +153,13 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 #### `partnerships`
 - **Purpose**: Partner agreements and student mobility numbers.
-- **Key Fields**: `id`, `institution_id` (FK), `partner_name`, `country`, `agreement_type`, `student_mobility_in`, `student_mobility_out`, `start_date`, `end_date`, `created_at`, `updated_at`
+- **Key Fields**: `id`, `institution_id` (FK), `partner_name`, `partner_country`, `type` (academic/industry/government/ngo), `start_date`, `end_date`, `is_active`, `outgoing_students`, `incoming_students`, `created_at`
 - **Scope**: Institution-scoped.
 - **RLS**: Visible to partnerships managers and admins of the same institution.
+
+#### `v_partnerships_kpis` (view)
+- **Purpose**: Aggregated partnership KPIs per institution.
+- **Columns**: `institution_id`, `active_partnerships`, `total_partnerships`, `total_outgoing_students`, `total_incoming_students`, `international_partnerships` (partner_country ≠ TN), `academic_partnerships`, `industry_partnerships`
 
 ---
 
@@ -163,8 +167,12 @@ The UCAR Manager database is organized into logical domains to support multi-ten
 
 #### `infrastructure_assets`
 - **Purpose**: Classrooms, labs, equipment with occupancy and status.
-- **Key Fields**: `id`, `institution_id` (FK), `asset_type` (classroom, lab, equipment), `location`, `capacity`, `current_occupancy`, `status` (available, maintenance, retired), `created_at`, `updated_at`
+- **Key Fields**: `id`, `institution_id` (FK), `asset_type` (classroom/lab/office/server), `name`, `location`, `capacity`, `status` (operational/maintenance/out_of_service), `reported_occupancy_pct`, `last_maintenance`, `created_at`
 - **Scope**: Institution-scoped.
+
+#### `v_infrastructure_kpis` (view)
+- **Purpose**: Aggregated infrastructure KPIs per institution.
+- **Columns**: `institution_id`, `total_assets`, `operational_count`, `maintenance_count`, `out_of_service_count`, `operational_rate`, `avg_occupancy_pct`, `classroom_count`, `lab_count`
 
 ---
 

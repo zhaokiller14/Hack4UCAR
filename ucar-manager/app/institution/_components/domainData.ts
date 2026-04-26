@@ -56,10 +56,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard academique & pedagogie",
     subtitle: "Suivi des parcours, progression et examens",
     kpis: [
-      { title: "Taux de reussite", value: "78.6%", delta: "+1.2%", accentColor: "#2E7D32" },
-      { title: "Assiduite", value: "91.1%", delta: "+0.8%", accentColor: "#2E7D32" },
-      { title: "Redoublement", value: "9.4%", delta: "-0.6%", accentColor: "#2E7D32" },
-      { title: "Abandon", value: "6.8%", delta: "+0.5%", accentColor: "#BA1A1A" },
+      { title: "Étudiants inscrits", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Taux de réussite", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Taux d'abandon", value: "—", delta: "—", accentColor: "#BA1A1A" },
+      { title: "Taux de redoublement", value: "—", delta: "—", accentColor: "#C8A74B" },
     ],
     alerts: [
       { id: "a1", metric: "Cours non assures", detail: "18 seances non dispensees sur les 10 derniers jours.", severity: "high" },
@@ -92,10 +92,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard emploi & alumni",
     subtitle: "Insertion professionnelle et reseau des diplomes",
     kpis: [
-      { title: "Employabilite", value: "76.9%", delta: "+2.1%", accentColor: "#2E7D32" },
-      { title: "Delai vers emploi", value: "5.2 mois", delta: "-0.4", accentColor: "#2E7D32" },
-      { title: "Partenariats nationaux", value: "42", delta: "+3", accentColor: "#1B4F6B" },
-      { title: "Partenariats internationaux", value: "17", delta: "+1", accentColor: "#1B4F6B" },
+      { title: "Taux d'employabilité", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Délai vers emploi", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Emploi national", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Emploi international", value: "—", delta: "—", accentColor: "#C8A74B" },
     ],
     alerts: [
       { id: "a1", metric: "Baisse insertion SI", detail: "La filiere SI enregistre -4.3 points sur 2 trimestres.", severity: "high" },
@@ -128,10 +128,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard finance & comptabilite",
     subtitle: "Execution budgetaire et performance de depense",
     kpis: [
-      { title: "Budget alloue", value: "12.8 M TND", delta: "+4.0%", accentColor: "#1B4F6B" },
-      { title: "Budget consomme", value: "11.4 M TND", delta: "+2.8%", accentColor: "#1B4F6B" },
-      { title: "Execution", value: "89.1%", delta: "+1.4%", accentColor: "#2E7D32" },
-      { title: "Cout par etudiant", value: "4 320 TND", delta: "-1.6%", accentColor: "#2E7D32" },
+      { title: "Budget alloué", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Budget consommé", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Taux d'exécution", value: "—", delta: "—", accentColor: "#C8A74B" },
+      { title: "Coût par étudiant", value: "—", delta: "—", accentColor: "#1B4F6B" },
     ],
     alerts: [
       { id: "a1", metric: "Depassement maintenance", detail: "Depense superieure de 12% a la trajectoire previsionnelle.", severity: "high" },
@@ -164,10 +164,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard ressources humaines",
     subtitle: "Pilotage des effectifs, charges et stabilite",
     kpis: [
-      { title: "Effectif total", value: "624", delta: "+12", accentColor: "#1B4F6B" },
-      { title: "Absenteisme", value: "7.1%", delta: "-0.8%", accentColor: "#2E7D32" },
-      { title: "Formations completees", value: "71%", delta: "+5.2%", accentColor: "#2E7D32" },
-      { title: "Charge enseignement", value: "15.6 h", delta: "+0.3", accentColor: "#C8A74B" },
+      { title: "Effectif total", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Absentéisme", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Charge enseignement moy.", value: "—", delta: "—", accentColor: "#C8A74B" },
+      { title: "Personnel recherche", value: "—", delta: "—", accentColor: "#1B4F6B" },
     ],
     alerts: [
       { id: "a1", metric: "Surcharge enseignante", detail: "3 departements depassent 18h hebdomadaires en moyenne.", severity: "high" },
@@ -200,10 +200,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard recherche & innovation",
     subtitle: "Production scientifique, projets et financement",
     kpis: [
-      { title: "Publications", value: "142", delta: "+11", accentColor: "#2E7D32" },
-      { title: "Projets actifs", value: "28", delta: "+2", accentColor: "#1B4F6B" },
-      { title: "Financement securise", value: "3.7 M TND", delta: "+9%", accentColor: "#2E7D32" },
-      { title: "Brevets deposes", value: "6", delta: "+1", accentColor: "#1B4F6B" },
+      { title: "Publications", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Projets actifs", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Financement sécurisé", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Brevets déposés", value: "—", delta: "—", accentColor: "#1B4F6B" },
     ],
     alerts: [
       { id: "a1", metric: "Retard livrables projet", detail: "2 projets nationaux depassent les jalons de 20 jours.", severity: "high" },
@@ -236,10 +236,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard ESG & RSE",
     subtitle: "Environnement, inclusion et gouvernance",
     kpis: [
-      { title: "Conso energie", value: "-8.4%", delta: "vs N-1", accentColor: "#2E7D32" },
-      { title: "Empreinte carbone", value: "-6.1%", delta: "vs N-1", accentColor: "#2E7D32" },
-      { title: "Taux recyclage", value: "52%", delta: "+4%", accentColor: "#1B4F6B" },
-      { title: "Accessibilite campus", value: "81%", delta: "+3%", accentColor: "#1B4F6B" },
+      { title: "Consommation énergie", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Empreinte carbone", value: "—", delta: "—", accentColor: "#C8A74B" },
+      { title: "Taux de recyclage", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Mobilité verte", value: "—", delta: "—", accentColor: "#2E7D32" },
     ],
     alerts: [
       { id: "a1", metric: "Consommation nocturne", detail: "Pics anormaux detectes sur 2 batiments administratifs.", severity: "high" },
@@ -272,10 +272,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard infrastructure & equipements",
     subtitle: "Salles, IT et travaux en cours",
     kpis: [
-      { title: "Occupation salles", value: "84%", delta: "+2%", accentColor: "#1B4F6B" },
-      { title: "Etat parc IT", value: "91%", delta: "+1%", accentColor: "#2E7D32" },
-      { title: "Disponibilite equipements", value: "88%", delta: "-1%", accentColor: "#C8A74B" },
-      { title: "Travaux en cours", value: "7", delta: "+2", accentColor: "#1B4F6B" },
+      { title: "Taux opérationnel", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Occupation moyenne", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "En maintenance", value: "—", delta: "—", accentColor: "#C8A74B" },
+      { title: "Salles / Labos", value: "—", delta: "—", accentColor: "#1B4F6B" },
     ],
     alerts: [
       { id: "a1", metric: "Salles surutilisees", detail: "4 salles depassent 95% d'occupation hebdomadaire.", severity: "high" },
@@ -308,10 +308,10 @@ const DOMAIN_CONTENT: Record<InstitutionDomainKey, DashboardProps> = {
     title: "Dashboard partenariats & mobilite",
     subtitle: "Accords actifs et flux de mobilite",
     kpis: [
-      { title: "Accords actifs", value: "58", delta: "+4", accentColor: "#1B4F6B" },
-      { title: "Mobilite entrante", value: "126", delta: "+9%", accentColor: "#2E7D32" },
-      { title: "Mobilite sortante", value: "102", delta: "+7%", accentColor: "#2E7D32" },
-      { title: "Projets internationaux", value: "14", delta: "+2", accentColor: "#1B4F6B" },
+      { title: "Partenariats actifs", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Mobilité sortante", value: "—", delta: "—", accentColor: "#2E7D32" },
+      { title: "Partenariats internationaux", value: "—", delta: "—", accentColor: "#1B4F6B" },
+      { title: "Académique / Industrie", value: "—", delta: "—", accentColor: "#C8A74B" },
     ],
     alerts: [
       { id: "a1", metric: "Conventions a renouveler", detail: "8 accords expirent au prochain semestre.", severity: "high" },
