@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FR } from "@/lib/i18n";
 import DataTable, { type Column } from "@/components/shared/DataTable";
 import RecordFormModal, {
   type FieldDef,
@@ -31,18 +32,8 @@ type FormState =
   | { mode: "edit"; row: InfrastructureAssetRow }
   | null;
 
-const ASSET_TYPE_OPTIONS = [
-  { value: "classroom", label: "Salle de classe" },
-  { value: "lab", label: "Laboratoire" },
-  { value: "office", label: "Bureau" },
-  { value: "server", label: "Serveur" },
-];
-
-const STATUS_OPTIONS = [
-  { value: "operational", label: "Opérationnel" },
-  { value: "maintenance", label: "En maintenance" },
-  { value: "out_of_service", label: "Hors service" },
-];
+const ASSET_TYPE_OPTIONS = Object.entries(FR.infraAssetType).map(([v, l]) => ({ value: v, label: l }));
+const STATUS_OPTIONS = Object.entries(FR.infraStatus).map(([v, l]) => ({ value: v, label: l }));
 
 function formatDate(dateStr: string | null) {
   if (!dateStr) return "—";
@@ -51,11 +42,11 @@ function formatDate(dateStr: string | null) {
 }
 
 function getAssetTypeLabel(type: string): string {
-  return ASSET_TYPE_OPTIONS.find((o) => o.value === type)?.label ?? type;
+  return FR.infraAssetType[type as keyof typeof FR.infraAssetType] ?? type;
 }
 
 function getStatusLabel(status: string): string {
-  return STATUS_OPTIONS.find((o) => o.value === status)?.label ?? status;
+  return FR.infraStatus[status as keyof typeof FR.infraStatus] ?? status;
 }
 
 const STATUS_STYLES: Record<string, string> = {

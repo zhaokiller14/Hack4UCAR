@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { FR } from "@/lib/i18n";
 import DataTable, { type Column } from "@/components/shared/DataTable";
 import RecordFormModal, {
   type FieldDef,
@@ -27,12 +28,7 @@ type Props = {
 
 type FormState = { mode: "create" } | { mode: "edit"; exam: ExamRow } | null;
 
-const TYPE_OPTIONS = [
-  { value: "", label: "—" },
-  { value: "midterm", label: "Partiel" },
-  { value: "final", label: "Final" },
-  { value: "makeup", label: "Rattrapage" },
-];
+const TYPE_OPTIONS = [{ value: "", label: "—" }, ...Object.entries(FR.examType).map(([v, l]) => ({ value: v, label: l }))];
 
 const SEMESTER_OPTIONS = [
   { value: "", label: "—" },

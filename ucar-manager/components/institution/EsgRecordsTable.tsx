@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FR } from "@/lib/i18n";
 import DataTable, { type Column } from "@/components/shared/DataTable";
 import RecordFormModal, {
   type FieldDef,
@@ -31,11 +32,7 @@ type FormState =
   | { mode: "edit"; row: EsgRecordRow }
   | null;
 
-const PERIOD_TYPE_OPTIONS = [
-  { value: "monthly", label: "Mensuel" },
-  { value: "semester", label: "Semestre" },
-  { value: "annual", label: "Annuel" },
-];
+const PERIOD_TYPE_OPTIONS = Object.entries(FR.esgPeriodType).map(([v, l]) => ({ value: v, label: l }));
 
 function formatDate(dateStr: string | null) {
   if (!dateStr) return "—";
@@ -63,13 +60,13 @@ export default function EsgRecordsTable({
 
   const columns: Column<EsgRecordRow>[] = [
     {
-      header: "Periode",
+      header: "Période",
       render: (row) => (
-        <span className="font-medium text-[#1B1C1A]">{row.period_type}</span>
+        <span className="font-medium text-[#1B1C1A]">{FR.esgPeriodType[row.period_type as keyof typeof FR.esgPeriodType] ?? row.period_type}</span>
       ),
     },
     {
-      header: "Date debut",
+      header: "Date début",
       render: (row) => formatDate(row.period_start),
     },
     {
