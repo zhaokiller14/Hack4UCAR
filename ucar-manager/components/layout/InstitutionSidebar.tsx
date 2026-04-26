@@ -17,6 +17,7 @@ import {
 	Megaphone,
 	FileText,
 	Bot,
+	Upload,
 	LogOut,
 } from "lucide-react";
 
@@ -37,6 +38,7 @@ const NAV = [
 	{ href: "/institution/alerts", label: "Alertes", icon: AlertTriangle },
 	{ href: "/institution/announcements", label: "Annonces", icon: Megaphone },
 	{ href: "/institution/reports", label: "Rapports", icon: FileText },
+	{ href: "/institution/upload", label: "Upload & ingestion", icon: Upload },
 	{ href: "/institution/ai-chat", label: "Assistant IA", icon: Bot },
 ];
 
