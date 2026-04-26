@@ -95,35 +95,39 @@ export function LoginForm({
       )}
       {...props}
     >
-      <aside className="relative hidden w-[40%] flex-col justify-between bg-[#efeeeb] p-8 lg:flex">
+      <aside className="relative hidden w-[55%] flex-col justify-between overflow-hidden bg-[#003850] p-8 lg:flex">
+        {/* Blurred background image */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-10"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage:
-              "repeating-linear-gradient(90deg, transparent, transparent 40px, #1b4f6b 40px, #1b4f6b 42px)",
+            backgroundImage: "url('/ucar.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "blur(6px) brightness(0.35)",
+            transform: "scale(1.05)",
           }}
         />
         <div className="relative z-10 flex flex-grow flex-col items-center justify-center space-y-3 text-center">
-          <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-[#c1c7ce] bg-white p-4">
-            <span className="text-2xl font-bold text-[#1b4f6b]">UC</span>
+          <div className="mb-6 flex h-40 w-40 items-center justify-center rounded-2xl border border-white/30 bg-white/90 p-4 shadow-xl">
+            <img src="/ucar-logo.png" alt="UCAR Logo" className="h-full w-full object-contain" />
           </div>
-          <h1 className="text-3xl font-semibold uppercase tracking-tight text-[#1b4f6b]">
+          <h1 className="text-3xl font-semibold uppercase tracking-tight text-white">
             Universite de Carthage
           </h1>
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#41484d]">
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-white/70">
             Plateforme d&apos;Intelligence Institutionnelle
           </p>
-          <div className="my-8 h-px w-16 bg-[#c1c7ce]" />
-          <p className="text-lg text-[#1b1c1a]">Bienvenue sur UCAR Intelligence</p>
+          <div className="my-8 h-px w-16 bg-white/30" />
+          <p className="text-lg text-white/90">Bienvenue sur UCAR Intelligence</p>
         </div>
-        <p className="relative z-10 text-center text-xs text-[#41484d]">
+        <p className="relative z-10 text-center text-xs text-white/50">
           © 2026 UCAR. Tous droits reserves.
         </p>
       </aside>
 
-      <main className="flex w-full items-center justify-center bg-white p-6 lg:w-[60%] lg:p-10">
-        <div className="w-full max-w-md">
+      <main className="flex w-full items-center justify-center bg-white p-6 lg:w-[45%] lg:p-10">
+        <div className="w-full max-w-sm">
           <div className="mb-10 lg:hidden">
             <h1 className="text-center text-2xl font-semibold uppercase tracking-tight text-[#1b4f6b]">
               Universite de Carthage
