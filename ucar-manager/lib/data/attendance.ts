@@ -33,3 +33,22 @@ export async function getAttendanceRecords(
 
   return { data: (data ?? []) as AttendanceRow[], total: count ?? 0 };
 }
+
+export async function getRecentAttendance(
+  institutionId: string,
+  limit: number,
+): Promise<AttendanceRow[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("attendance_records")
+    .select(
+      "id, student_id, course_id, session_date, present, note, courses!inner(institution_id)",
+    )
+    .eq("courses.institution_id", institutionId)
+    .order("session_date", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(error.message);
+  return (data ?? []) as AttendanceRow[];
+}
