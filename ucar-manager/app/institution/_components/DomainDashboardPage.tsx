@@ -26,7 +26,7 @@ export default function DomainDashboardPage({
   kpis,
 }: DomainDashboardPageProps) {
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-8 pb-4">
+    <div className="space-y-6 p-8 pb-4">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-[#1B1C1A]">{title}</h1>

@@ -74,7 +74,7 @@ export default async function InstitutionStudents({
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-8">
+    <div className="space-y-6 p-8">
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">

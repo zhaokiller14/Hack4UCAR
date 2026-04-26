@@ -107,7 +107,7 @@ export default async function InstitutionInfrastructure({
   return (
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
-      <div className="mx-auto max-w-7xl space-y-6 px-8 pb-8 pt-0">
+      <div className="space-y-6 px-8 pb-8 pt-0">
         <SectionCard
           title="Actifs infrastructure"
           description="Salles, laboratoires, serveurs et bureaux"

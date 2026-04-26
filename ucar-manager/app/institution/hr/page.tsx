@@ -147,7 +147,7 @@ export default async function InstitutionHrDashboard({
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
 
-      <div className="mx-auto max-w-7xl space-y-6 px-8 pb-8">
+      <div className="space-y-6 px-8 pb-8">
         <SectionCard title="Staff" description="Personnel de l'institution">
           <HrStaffTable
             rows={staffRows}

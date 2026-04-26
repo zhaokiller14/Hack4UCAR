@@ -103,7 +103,7 @@ export default async function InstitutionEsg({
   return (
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
-      <div className="mx-auto max-w-7xl space-y-6 px-8 pb-8 pt-0">
+      <div className="space-y-6 px-8 pb-8 pt-0">
         <SectionCard title="Enregistrements ESG" description="Données environnementales par période">
           <EsgRecordsTable
             rows={recordsResult.data}
