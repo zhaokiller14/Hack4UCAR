@@ -136,6 +136,53 @@ function filterToAllowedColumns(
   );
 }
 
+function normalizeEnumText(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalized = value.trim().toLowerCase().replace(/\s+/g, "_");
+  return normalized || null;
+}
+
+function prepareInsertPayload(
+  table: (typeof MATCHED_TABLE_NAMES)[number],
+  attributes: Record<string, unknown>,
+  rawUpload: RawUploadRow,
+): Record<string, unknown> {
+  const payload = {
+    ...filterToAllowedColumns(table, attributes),
+  } as Record<string, unknown>;
+
+  if (TABLE_COLUMNS[table]?.includes("institution_id") && !payload.institution_id) {
+    payload.institution_id = rawUpload.institution_id;
+  }
+
+  if (TABLE_COLUMNS[table]?.includes("source_upload_id") && !payload.source_upload_id) {
+    payload.source_upload_id = rawUpload.id;
+  }
+
+  if (table === "students" && payload.status !== undefined) {
+    const normalized = normalizeEnumText(payload.status);
+    if (normalized) {
+      payload.status = normalized;
+    } else {
+      delete payload.status;
+    }
+  }
+
+  if (table === "enrollments" && payload.status !== undefined) {
+    const normalized = normalizeEnumText(payload.status);
+    if (normalized) {
+      payload.status = normalized;
+    } else {
+      delete payload.status;
+    }
+  }
+
+  return payload;
+}
+
 type MatchedTableName = (typeof MATCHED_TABLE_NAMES)[number] | null;
 
 type UserRoleRow = {
@@ -730,7 +777,9 @@ export async function PUT(request: Request) {
     }
 
     log("info", "PUT /verify: authorizing context", { raw_upload_id });
-    const { supabase } = await getAuthorizedContext(raw_upload_id);
+    const { supabase, rawUpload } = await getAuthorizedContext(raw_upload_id);
+    // Keep user-context authorization checks, then use service role for cross-table writes.
+    const writeClient = createServiceRoleClient();
 
     const normalizedEntities = entities
       .map(normalizeEntity)
@@ -784,9 +833,9 @@ export async function PUT(request: Request) {
         continue;
       }
 
-      const insertPayload = filterToAllowedColumns(table, entity.attributes);
+      const insertPayload = prepareInsertPayload(table, entity.attributes, rawUpload);
 
-      const { error } = await supabase.from(table).insert(insertPayload);
+      const { error } = await writeClient.from(table).insert(insertPayload);
 
       if (error) {
         log("error", "PUT /verify: DB insert failed for entity", {
@@ -822,7 +871,7 @@ export async function PUT(request: Request) {
       },
     };
 
-    await supabase
+    await writeClient
       .from("raw_uploads")
       .update({
         extracted_data: reviewedData,
