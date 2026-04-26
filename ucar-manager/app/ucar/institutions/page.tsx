@@ -7,17 +7,14 @@ import Image from "next/image";
 export default async function UcarInstitutions() {
   const institutions = await getInstitutionsList();
 
-  return (
-    <main className="mx-auto max-w-6xl space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-[#1B1C1A]">
-          Établissements
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Sélectionnez un établissement pour consulter sa fiche ou modifier ses
-          informations.
-        </p>
-      </div>
+	return (
+		<main className="space-y-6 p-6">
+			<div>
+				<h1 className="text-2xl font-semibold text-[#1B1C1A]">Établissements</h1>
+				<p className="mt-1 text-sm text-slate-500">
+					Sélectionnez un établissement pour consulter sa fiche ou modifier ses informations.
+				</p>
+			</div>
 
       <div className="overflow-hidden rounded-sm border border-[#003850]/10 bg-white">
         <table className="min-w-full text-sm">

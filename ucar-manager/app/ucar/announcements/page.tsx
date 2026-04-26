@@ -1,6 +1,7 @@
 import KpiSummaryCard from "../dashboard/_components/KpiSummaryCard";
 import SectionCard from "@/components/shared/SectionCard";
 import AnnouncementsTable from "../_components/AnnouncementsTable";
+import AnnouncementComposer from "../dashboard/_components/AnnouncementComposer";
 import { createClient } from "@/lib/supabase/server";
 
 type AnnouncementRow = {
@@ -111,7 +112,7 @@ export default async function UcarAnnouncements() {
   const maxMonthCount = Math.max(...topMonths.map(([, c]) => c), 1);
 
   return (
-    <main className="mx-auto max-w-7xl space-y-8 p-8">
+    <main className="space-y-8 p-8">
       {/* Page header */}
       <div className="flex items-start justify-between">
         <div>
@@ -252,6 +253,9 @@ export default async function UcarAnnouncements() {
           </div>
         </SectionCard>
       </div>
+
+      {/* Compose new announcement */}
+      <AnnouncementComposer />
 
       {/* Filterable announcements table — client component */}
       <AnnouncementsTable announcements={announcements} />

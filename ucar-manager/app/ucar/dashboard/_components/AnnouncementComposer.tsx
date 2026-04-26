@@ -1,95 +1,80 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { Send } from "lucide-react";
 import SectionCard from "@/components/shared/SectionCard";
+import { publishAnnouncement } from "@/lib/actions/announcements";
 
 const AUDIENCE_OPTIONS = [
   { value: "all",                  label: "Tous les utilisateurs" },
-  { value: "super_admin",          label: "Super administrateurs" },
   { value: "institution_admin",    label: "Directeurs d'établissement" },
   { value: "finance_manager",      label: "Responsables finance" },
   { value: "hr_manager",           label: "Responsables RH" },
   { value: "academic_manager",     label: "Responsables académiques" },
+  { value: "research_manager",     label: "Responsables recherche" },
+  { value: "partnerships_manager", label: "Responsables partenariats" },
+  { value: "esg_manager",          label: "Responsables ESG" },
+  { value: "infrastructure_manager", label: "Responsables infrastructure" },
 ];
 
+const INPUT = "w-full rounded-sm border border-slate-200 bg-white px-3 py-2 text-sm text-[#1B1C1A] placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#003850]";
+
 export default function AnnouncementComposer() {
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [audience, setAudience] = useState("all");
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [pending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      setSent(true);
-      setTitle("");
-      setBody("");
-      setAudience("all");
-      setTimeout(() => setSent(false), 3000);
-    }, 800);
+    if (!formRef.current) return;
+    const formData = new FormData(formRef.current);
+    setError(null);
+    setSuccess(false);
+
+    startTransition(async () => {
+      const result = await publishAnnouncement(formData);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setSuccess(true);
+        formRef.current?.reset();
+        setTimeout(() => setSuccess(false), 4000);
+      }
+    });
   }
 
-  const inputCls = "w-full rounded-sm border border-slate-200 bg-white px-3 py-2 text-sm text-[#1B1C1A] placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1B4F6B]";
-
   return (
-    <SectionCard title="Nouvelle annonce" description="Diffuser un message à tout ou partie du réseau">
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <SectionCard title="Nouvelle annonce" description="Diffuser un message à tout ou partie du réseau UCAR">
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <label htmlFor="ann-title" className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Titre
-          </label>
-          <input
-            id="ann-title"
-            className={inputCls}
-            placeholder="Titre de l'annonce"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+          <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Titre</label>
+          <input name="title" className={INPUT} placeholder="Titre de l'annonce" required />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="ann-body" className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Message
-          </label>
-          <textarea
-            id="ann-body"
-            rows={4}
-            className={inputCls + " resize-none"}
-            placeholder="Rédigez votre annonce…"
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            required
-          />
+          <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Message</label>
+          <textarea name="body" rows={4} className={INPUT + " resize-none"} placeholder="Rédigez votre annonce…" required />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="ann-audience" className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Destinataires
-          </label>
-          <select
-            id="ann-audience"
-            value={audience}
-            onChange={(e) => setAudience(e.target.value)}
-            className={inputCls}
-          >
+          <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Destinataires</label>
+          <select name="audience" className={INPUT}>
             {AUDIENCE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
         </div>
 
+        {error && <p className="rounded-sm border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+
         <button
           type="submit"
-          disabled={sending}
-          className="w-full flex items-center justify-center gap-2 bg-[#003850] text-white text-xs font-semibold uppercase tracking-wider px-4 py-2.5 rounded-sm hover:bg-[#1B4F6B] transition-colors disabled:opacity-60"
+          disabled={pending}
+          className="flex w-full items-center justify-center gap-2 rounded-sm bg-[#003850] px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#1B4F6B] disabled:opacity-60"
         >
           <Send className="h-4 w-4" />
-          {sending ? "Envoi en cours…" : sent ? "Annonce envoyée !" : "Publier l'annonce"}
+          {pending ? "Publication…" : success ? "Annonce publiée !" : "Publier l'annonce"}
         </button>
       </form>
     </SectionCard>

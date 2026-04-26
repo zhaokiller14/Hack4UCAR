@@ -85,7 +85,7 @@ export default async function UcarAlerts() {
   const topDomains = Object.entries(domainCounts).sort((a, b) => b[1] - a[1]);
 
   return (
-    <main className="mx-auto max-w-7xl space-y-8 p-8">
+    <main className="space-y-8 p-8">
       <div>
         <h1 className="text-2xl font-semibold text-[#1B1C1A]">UCAR Alerts</h1>
         <p className="mt-0.5 text-sm text-slate-500">
