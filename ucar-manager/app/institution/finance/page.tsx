@@ -1,32 +1,28 @@
 import { requireInstitutionRole } from "@/lib/auth/guards";
-import { getFinanceKpis } from "@/lib/data/finance";
-import { getBudgetLines } from "@/lib/data/finance";
+import { getFinanceKpis, getBudgetLines, getExternalFundings } from "@/lib/data/finance";
 import {
-  createBudgetLine,
-  deleteBudgetLine,
-  updateBudgetLine,
+  createBudgetLine, deleteBudgetLine, updateBudgetLine,
+  createExternalFunding, updateExternalFunding, deleteExternalFunding,
 } from "@/lib/actions/finance";
-import type { BudgetLineInput } from "@/lib/actions/finance";
+import type { BudgetLineInput, ExternalFundingInput } from "@/lib/actions/finance";
 import FinanceBudgetTable from "@/components/institution/FinanceBudgetTable";
+import ExternalFundingsTable from "@/components/institution/ExternalFundingsTable";
 import SectionCard from "@/components/shared/SectionCard";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
 
 const PAGE_SIZE = 20;
-const WRITE_ROLES = new Set([
-  "super_admin",
-  "institution_admin",
-  "finance_manager",
-]);
+const WRITE_ROLES = new Set(["super_admin", "institution_admin", "finance_manager"]);
 
 export default async function InstitutionFinanceDashboard({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; fundingPage?: string }>;
 }) {
   const ctx = await requireInstitutionRole();
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, parseInt(pageParam ?? "1", 10));
+  const { page: pageParam, fundingPage: fundingPageParam } = await searchParams;
+  const page        = Math.max(1, parseInt(pageParam        ?? "1", 10));
+  const fundingPage = Math.max(1, parseInt(fundingPageParam ?? "1", 10));
   const { institutionId } = ctx;
 
   const base = getInstitutionDomainDashboard("finance");
@@ -35,15 +31,14 @@ export default async function InstitutionFinanceDashboard({
     return <DomainDashboardPage {...base} />;
   }
 
-  const institutionIdValue = institutionId;
-
-  const [rows, { data: budgetLines, total }] = await Promise.all([
-    getFinanceKpis(institutionIdValue),
-    getBudgetLines(institutionIdValue, page, PAGE_SIZE),
-  ]);
+  const [rows, { data: budgetLines, total }, { data: fundings, total: fundingTotal }] =
+    await Promise.all([
+      getFinanceKpis(institutionId),
+      getBudgetLines(institutionId, page, PAGE_SIZE),
+      getExternalFundings(institutionId, fundingPage, PAGE_SIZE),
+    ]);
 
   const canWrite = WRITE_ROLES.has(ctx.role ?? "");
-
   const latest = rows[0];
 
   const fmt = (n: number | null) =>
@@ -51,74 +46,81 @@ export default async function InstitutionFinanceDashboard({
 
   const kpis = latest
     ? [
+        { title: "Budget alloué",      value: fmt(latest.total_allocated), delta: latest.fiscal_year, accentColor: "#1B4F6B" },
+        { title: "Budget consommé",    value: fmt(latest.total_consumed),  delta: latest.fiscal_year, accentColor: "#1B4F6B" },
         {
-          title: "Budget alloue",
-          value: fmt(latest.total_allocated),
+          title: "Taux d'exécution",
+          value: latest.execution_rate !== null ? `${latest.execution_rate}%` : "—",
           delta: latest.fiscal_year,
-          accentColor: "#1B4F6B",
+          accentColor: latest.execution_rate !== null && latest.execution_rate >= 90 ? "#2E7D32" : "#C8A74B",
         },
+        { title: "Coût par étudiant",  value: latest.cost_per_student !== null ? `${latest.cost_per_student.toLocaleString("fr-TN")} TND` : "—", delta: latest.fiscal_year, accentColor: "#1B4F6B" },
+        { title: "Financements externes", value: fmt(latest.total_external_income), delta: `${latest.funding_sources_count ?? 0} sources`, accentColor: "#2E7D32" },
         {
-          title: "Budget consomme",
-          value: fmt(latest.total_consumed),
-          delta: latest.fiscal_year,
-          accentColor: "#1B4F6B",
-        },
-        {
-          title: "Taux d'execution",
-          value:
-            latest.execution_rate !== null ? `${latest.execution_rate}%` : "—",
-          delta: latest.fiscal_year,
-          accentColor:
-            latest.execution_rate !== null && latest.execution_rate >= 90
-              ? "#2E7D32"
-              : "#C8A74B",
-        },
-        {
-          title: "Cout par etudiant",
-          value:
-            latest.cost_per_student !== null
-              ? `${latest.cost_per_student.toLocaleString("fr-TN")} TND`
-              : "—",
+          title: "Taux d'autofinancement",
+          value: latest.self_financing_rate !== null ? `${latest.self_financing_rate}%` : "—",
           delta: latest.fiscal_year,
           accentColor: "#1B4F6B",
         },
       ]
     : undefined;
 
-  async function handleCreate(_institutionId: string, input: BudgetLineInput) {
+  async function handleCreate(_id: string, input: BudgetLineInput) {
     "use server";
-    return createBudgetLine(institutionIdValue, input);
+    return createBudgetLine(institutionId!, input);
+  }
+  async function handleUpdate(id: string, input: BudgetLineInput) {
+    "use server";
+    return updateBudgetLine(id, input);
+  }
+  async function handleDelete(id: string) {
+    "use server";
+    return deleteBudgetLine(id);
   }
 
-  async function handleUpdate(budgetLineId: string, input: BudgetLineInput) {
+  async function handleCreateFunding(_id: string, input: ExternalFundingInput) {
     "use server";
-    return updateBudgetLine(budgetLineId, input);
+    return createExternalFunding(institutionId!, input);
   }
-
-  async function handleDelete(budgetLineId: string) {
+  async function handleUpdateFunding(id: string, input: ExternalFundingInput) {
     "use server";
-    return deleteBudgetLine(budgetLineId);
+    return updateExternalFunding(id, input);
+  }
+  async function handleDeleteFunding(id: string) {
+    "use server";
+    return deleteExternalFunding(id);
   }
 
   return (
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
 
-      <div className="space-y-6 px-8 pb-8">
-        <SectionCard
-          title="Lignes budgetaires"
-          description="Lignes budget_lines par annee fiscale et departement"
-        >
+      <div className="space-y-6 px-8 pb-8 pt-0">
+        <SectionCard title="Lignes budgétaires" description="Répartition par année fiscale et département">
           <FinanceBudgetTable
             rows={budgetLines}
             total={total}
             page={page}
             pageSize={PAGE_SIZE}
-            institutionId={institutionIdValue}
+            institutionId={institutionId}
             canWrite={canWrite}
             onCreate={handleCreate}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
+          />
+        </SectionCard>
+
+        <SectionCard title="Financements externes" description="Subventions, dons et contrats de financement">
+          <ExternalFundingsTable
+            rows={fundings}
+            total={fundingTotal}
+            page={fundingPage}
+            pageSize={PAGE_SIZE}
+            institutionId={institutionId}
+            canWrite={canWrite}
+            onCreate={handleCreateFunding}
+            onUpdate={handleUpdateFunding}
+            onDelete={handleDeleteFunding}
           />
         </SectionCard>
       </div>
