@@ -76,7 +76,7 @@ export default function EmploymentForecastChart({
           <XAxis dataKey="label" tick={{ fill: "#475569", fontSize: 12 }} />
           <YAxis tick={{ fill: "#475569", fontSize: 12 }} unit="%" domain={[0, 100]} />
           <Tooltip
-            formatter={(value: number) => [`${value.toFixed(2)}%`, ""]}
+            formatter={(value) => [typeof value === "number" ? `${value.toFixed(2)}%` : value, ""]}
             labelStyle={{ color: "#0F172A", fontWeight: 600 }}
           />
           <Legend />

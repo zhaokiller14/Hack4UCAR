@@ -59,7 +59,7 @@ export default async function UcarAlerts() {
     );
   }
 
-  const alerts = (data ?? []) as AlertRow[];
+  const alerts = (data ?? []) as unknown as AlertRow[];
   const totalAlerts = alerts.length;
   const acknowledgedCount = alerts.filter(
     (item) => item.is_acknowledged,

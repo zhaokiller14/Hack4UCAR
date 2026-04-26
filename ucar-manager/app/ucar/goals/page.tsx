@@ -71,7 +71,7 @@ export default async function UcarGoals() {
     );
   }
 
-  const goals = (data ?? []) as GoalRow[];
+  const goals = (data ?? []) as unknown as GoalRow[];
   const totalGoals = goals.length;
   const organizationScopeCount = goals.filter(
     (item) => item.scope === "organization" || item.scope === "ucar_wide",

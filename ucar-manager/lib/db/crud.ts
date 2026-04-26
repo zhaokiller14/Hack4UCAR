@@ -55,7 +55,8 @@ export function getCrudTable(table: string): CrudTable | null {
 }
 
 export function isSuperAdminOnly(table: CrudTable): boolean {
-  return Boolean(CRUD_TABLES[table].superAdminOnly);
+  const config = CRUD_TABLES[table];
+  return "superAdminOnly" in config && Boolean(config.superAdminOnly);
 }
 
 export async function getAuthedSupabase() {

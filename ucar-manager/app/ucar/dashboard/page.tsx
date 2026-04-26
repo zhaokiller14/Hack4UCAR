@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import TodayDate from "./_components/TodayDate";
 import KpiSummaryCard from "./_components/KpiSummaryCard";
-import AlertsFeed from "./_components/AlertsFeed";
 import UploadActivityFeed from "./_components/UploadActivityFeed";
 import AnnouncementComposer from "./_components/AnnouncementComposer";
 import SectionCard from "@/components/shared/SectionCard";
@@ -56,12 +55,12 @@ export default async function UcarDashboard() {
   const avgAbsent     = avg((hrRes.data ?? []).map((r) => r.absenteeism_rate));
   const avgEmploy     = avg((employmentRes.data ?? []).map((r) => r.employability_rate));
 
-  const alerts  = (alertsRes.data  ?? []) as {
+  const alerts  = (alertsRes.data  ?? []) as unknown as {
     id: string; institution_id: string | null; kpi_domain: string; kpi_key: string;
     severity: string; message: string; is_acknowledged: boolean; triggered_at: string;
     institutions: { name: string | null; code: string | null } | null;
   }[];
-  const uploads = (uploadsRes.data ?? []) as {
+  const uploads = (uploadsRes.data ?? []) as unknown as  {
     id: string; institution_id: string; file_name: string; domain: string;
     status: string; created_at: string;
     institutions: { name: string | null } | null;
