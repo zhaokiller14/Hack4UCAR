@@ -5,6 +5,18 @@ import { getServerUserContext } from "@/lib/auth/guards";
 
 import UcarSidebar from "./_components/UcarSidebar";
 
+/**
+ * Formats a role string to be user-friendly.
+ * Converts snake_case to Title Case (e.g., "super_admin" → "Super Admin")
+ */
+function formatRoleLabel(role: string | null | undefined): string {
+  if (!role) return "Utilisateur";
+  return role
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export default async function UcarLayout({ children }: { children: React.ReactNode }) {
   unstable_noStore();
   const userContext = await getServerUserContext();
@@ -13,9 +25,7 @@ export default async function UcarLayout({ children }: { children: React.ReactNo
     redirect("/auth/login");
   }
 
-  const roleLabel = userContext.role === "super_admin"
-    ? "Super Admin"
-    : userContext.role ?? "Utilisateur";
+  const roleLabel = formatRoleLabel(userContext.role);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#FAF9F6]">
