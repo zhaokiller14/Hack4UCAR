@@ -65,6 +65,77 @@ const MATCHED_TABLE_NAMES = [
   "announcements",
 ] as const;
 
+// Allowed writable columns per table — strips AI hallucinations before insert.
+// Generated columns (id, created_at) are omitted; Supabase fills them.
+const TABLE_COLUMNS: Partial<Record<(typeof MATCHED_TABLE_NAMES)[number], readonly string[]>> = {
+  students: [
+    "institution_id", "student_code", "full_name", "email", "phone",
+    "birth_date", "gender", "specialization", "current_year", "status",
+    "enrollment_date", "graduation_date", "source_upload_id",
+  ],
+  enrollments: [
+    "student_id", "institution_id", "academic_year", "semester",
+    "specialization", "status", "repeated_year", "source_upload_id",
+  ],
+  courses: [
+    "institution_id", "course_code", "name", "department", "credits",
+    "semester", "academic_year", "instructor_id", "source_upload_id",
+  ],
+  attendance_records: [
+    "course_id", "student_id", "institution_id", "date", "status", "source_upload_id",
+  ],
+  exams: [
+    "course_id", "institution_id", "exam_date", "exam_type", "max_score", "source_upload_id",
+  ],
+  exam_results: [
+    "exam_id", "student_id", "institution_id", "score", "passed", "source_upload_id",
+  ],
+  staff: [
+    "institution_id", "staff_code", "full_name", "email", "phone",
+    "role", "department", "contract_type", "hire_date", "teaching_hours_per_week",
+    "source_upload_id",
+  ],
+  absences: [
+    "staff_id", "institution_id", "start_date", "end_date", "days", "reason", "source_upload_id",
+  ],
+  budget_lines: [
+    "institution_id", "academic_year", "category", "department",
+    "allocated_amount", "executed_amount", "source_upload_id",
+  ],
+  external_fundings: [
+    "institution_id", "source_name", "amount", "currency", "received_date",
+    "project_name", "source_upload_id",
+  ],
+  research_projects: [
+    "institution_id", "title", "principal_investigator_id", "status",
+    "start_date", "end_date", "funding_amount", "funding_source",
+    "publications_count", "source_upload_id",
+  ],
+  partnerships: [
+    "institution_id", "partner_name", "partner_type", "country",
+    "start_date", "end_date", "domain", "source_upload_id",
+  ],
+  infrastructure_assets: [
+    "institution_id", "asset_type", "name", "location", "quantity",
+    "condition", "acquisition_date", "source_upload_id",
+  ],
+  esg_records: [
+    "institution_id", "period_start", "period_end", "metric_key",
+    "value", "unit", "source_upload_id",
+  ],
+};
+
+function filterToAllowedColumns(
+  table: (typeof MATCHED_TABLE_NAMES)[number],
+  attributes: Record<string, unknown>,
+): Record<string, unknown> {
+  const allowed = TABLE_COLUMNS[table];
+  if (!allowed) return attributes;
+  return Object.fromEntries(
+    Object.entries(attributes).filter(([key]) => allowed.includes(key)),
+  );
+}
+
 type MatchedTableName = (typeof MATCHED_TABLE_NAMES)[number] | null;
 
 type UserRoleRow = {
@@ -713,9 +784,7 @@ export async function PUT(request: Request) {
         continue;
       }
 
-      const insertPayload = {
-        ...entity.attributes,
-      } as Record<string, unknown>;
+      const insertPayload = filterToAllowedColumns(table, entity.attributes);
 
       const { error } = await supabase.from(table).insert(insertPayload);
 
