@@ -107,7 +107,7 @@ export default async function InstitutionResearch({
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
 
-      <div className="mx-auto max-w-7xl space-y-6 px-8 pb-8">
+      <div className="space-y-6 px-8 pb-8">
         <RawUploadCard
           institutionId={userContext.institutionId ?? ""}
           defaultDomain="research"

@@ -101,7 +101,7 @@ export default async function InstitutionAcademicDashboard() {
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
 
-      <div className="mx-auto max-w-7xl px-8 pb-12 space-y-4 -mt-2">
+      <div className="px-8 pb-12 space-y-4 -mt-2">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <PreviewTable
             title="Étudiants"

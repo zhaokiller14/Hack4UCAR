@@ -102,7 +102,7 @@ export default async function InstitutionPartnerships({
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
 
-      <div className="mx-auto max-w-7xl space-y-6 px-8 pb-8">
+      <div className="space-y-6 px-8 pb-8">
         <SectionCard
           title="Partenariats"
           description="Partenariats académiques, industriels, gouvernementaux et ONG"

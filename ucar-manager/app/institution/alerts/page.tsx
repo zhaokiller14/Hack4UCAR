@@ -66,7 +66,7 @@ export default async function InstitutionAlerts() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-8">
+    <div className="space-y-6 p-8">
       <div>
         <h1 className="text-2xl font-semibold text-[#1B1C1A]">Alertes</h1>
         <p className="mt-0.5 text-sm text-slate-500">

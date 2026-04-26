@@ -104,7 +104,7 @@ export default async function InstitutionFinanceDashboard({
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
 
-      <div className="mx-auto max-w-7xl space-y-6 px-8 pb-8">
+      <div className="space-y-6 px-8 pb-8">
         <SectionCard
           title="Lignes budgetaires"
           description="Lignes budget_lines par annee fiscale et departement"
