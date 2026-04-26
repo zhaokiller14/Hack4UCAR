@@ -1,110 +1,141 @@
+import { createClient } from "@/lib/supabase/server";
 import TodayDate from "./_components/TodayDate";
 import KpiSummaryCard from "./_components/KpiSummaryCard";
-import AlertsFeed, { AlertItem } from "./_components/AlertsFeed";
-import StrategicGoalsTracker, { GoalItem } from "./_components/StrategicGoalsTracker";
-import UploadActivityFeed, { UploadItem } from "./_components/UploadActivityFeed";
-import ReportsPanel, { ReportItem } from "./_components/ReportsPanel";
+import AlertsFeed from "./_components/AlertsFeed";
+import UploadActivityFeed from "./_components/UploadActivityFeed";
 import AnnouncementComposer from "./_components/AnnouncementComposer";
-import InstitutionLeaderboard, { LeaderboardRow } from "./_components/InstitutionLeaderboard";
+import SectionCard from "@/components/shared/SectionCard";
+import SeverityBadge from "@/components/shared/SeverityBadge";
+import Link from "next/link";
 
-const ALERTS: AlertItem[] = [
-  { id: "1", institution_name: "ISG Tunis",      metric: "dropout_rate",     deviation: 3.1, severity: "critical", triggered_at: "2026-04-24T08:00:00Z" },
-  { id: "2", institution_name: "ISET Nabeul",    metric: "budget_execution", deviation: 2.7, severity: "high",     triggered_at: "2026-04-23T14:30:00Z" },
-  { id: "3", institution_name: "FST Tunis",      metric: "absenteeism_rate", deviation: 2.3, severity: "high",     triggered_at: "2026-04-22T10:00:00Z" },
-  { id: "4", institution_name: "ENIM Monastir",  metric: "success_rate",     deviation: -2.1, severity: "medium",  triggered_at: "2026-04-21T09:00:00Z" },
-];
+function avg(values: (number | null)[]): number | null {
+  const valid = values.filter((v): v is number => v !== null);
+  return valid.length ? valid.reduce((s, v) => s + v, 0) / valid.length : null;
+}
 
-const GOALS: GoalItem[] = [
-  { id: "1", title: "Taux de réussite réseau ≥ 80%",       domain: "academic",  progress: 72, target_label: "80%" },
-  { id: "2", title: "Taux d'exécution budgétaire ≥ 90%",   domain: "finance",   progress: 85, target_label: "90%" },
-  { id: "3", title: "Absentéisme du personnel < 8%",        domain: "hr",        progress: 60, target_label: "< 8%" },
-  { id: "4", title: "Empreinte carbone −15% vs 2024",       domain: "esg",       progress: 38, target_label: "−15%" },
-  { id: "5", title: "Projets de recherche actifs ≥ 120",    domain: "research",  progress: 91, target_label: "120" },
-];
+function fmt(n: number | null, suffix = "%"): string {
+  if (n === null) return "—";
+  return `${n.toFixed(1)}${suffix}`;
+}
 
-const UPLOADS: UploadItem[] = [
-  { id: "1", institution_name: "ISSAT Sousse",  file_name: "resultats_2025.pdf",     domain: "academic",  status: "completed",  created_at: "2026-04-25T07:00:00Z" },
-  { id: "2", institution_name: "ISET Nabeul",   file_name: "budget_T1.xlsx",          domain: "finance",   status: "processing", created_at: "2026-04-24T18:00:00Z" },
-  { id: "3", institution_name: "FST Tunis",     file_name: "rapport_rh.pdf",          domain: "hr",        status: "completed",  created_at: "2026-04-24T12:00:00Z" },
-  { id: "4", institution_name: "ENIM Monastir", file_name: "donnees_esg.xlsx",        domain: "esg",       status: "failed",     created_at: "2026-04-23T09:00:00Z" },
-  { id: "5", institution_name: "ISG Tunis",     file_name: "projets_recherche.pdf",   domain: "research",  status: "pending",    created_at: "2026-04-23T08:00:00Z" },
-];
+export default async function UcarDashboard() {
+  const supabase = await createClient();
 
-const REPORTS: ReportItem[] = [
-  { id: "1", title: "Rapport KPI Académique — T1 2026",  institution_name: "ISSAT Sousse", storage_path: "#", created_at: "2026-04-20T00:00:00Z" },
-  { id: "2", title: "Rapport d'exécution financière",    institution_name: "ISET Nabeul",  storage_path: "#", created_at: "2026-04-18T00:00:00Z" },
-  { id: "3", title: "Bilan annuel RH",                   institution_name: "FST Tunis",    storage_path: "#", created_at: "2026-04-15T00:00:00Z" },
-];
+  // Fetch all in parallel
+  const [
+    academicRes,
+    financeRes,
+    hrRes,
+    employmentRes,
+    alertsRes,
+    uploadsRes,
+    institutionsRes,
+  ] = await Promise.all([
+    supabase.from("v_academic_kpis").select("institution_id, dropout_rate, success_rate").order("academic_year", { ascending: false }),
+    supabase.from("v_finance_kpis_summary").select("institution_id, execution_rate").order("fiscal_year", { ascending: false }),
+    supabase.from("v_hr_kpis").select("institution_id, absenteeism_rate"),
+    supabase.from("v_employment_kpis").select("institution_id, employability_rate"),
+    supabase.from("alerts").select("id, institution_id, kpi_domain, kpi_key, severity, message, is_acknowledged, triggered_at, institutions(name, code)").eq("is_acknowledged", false).order("triggered_at", { ascending: false }).limit(6),
+    supabase.from("raw_uploads").select("id, institution_id, file_name, domain, status, created_at, institutions(name)").order("created_at", { ascending: false }).limit(6),
+    supabase.from("institutions").select("id, name, code, city").eq("is_active", true).order("name"),
+  ]);
 
-const INSTITUTIONS: LeaderboardRow[] = [
-  { id: "1", name: "ISSAT Sousse",  city: "Sousse",   students: 4200, success_rate: 63.2, budget_execution: 94.1,  alert_count: 2 },
-  { id: "2", name: "ISET Nabeul",   city: "Nabeul",   students: 3100, success_rate: 78.5, budget_execution: 142.0, alert_count: 1 },
-  { id: "3", name: "FST Tunis",     city: "Tunis",    students: 6800, success_rate: 81.4, budget_execution: 88.3,  alert_count: 1 },
-  { id: "4", name: "ENIM Monastir", city: "Monastir", students: 2900, success_rate: 71.0, budget_execution: 91.7,  alert_count: 1 },
-  { id: "5", name: "ISG Tunis",     city: "Tunis",    students: 5100, success_rate: 84.2, budget_execution: 96.0,  alert_count: 0 },
-];
+  // Latest KPI per institution (deduplicate — take first row per institution_id)
+  const latestAcademic = new Map<string, { dropout_rate: number | null; success_rate: number | null }>();
+  for (const row of (academicRes.data ?? [])) {
+    if (!latestAcademic.has(row.institution_id)) latestAcademic.set(row.institution_id, row);
+  }
+  const latestFinance = new Map<string, { execution_rate: number | null }>();
+  for (const row of (financeRes.data ?? [])) {
+    if (!latestFinance.has(row.institution_id)) latestFinance.set(row.institution_id, row);
+  }
 
-export default function UcarDashboard() {
+  const avgDropout    = avg([...latestAcademic.values()].map((r) => r.dropout_rate));
+  const avgSuccess    = avg([...latestAcademic.values()].map((r) => r.success_rate));
+  const avgExecution  = avg([...latestFinance.values()].map((r) => r.execution_rate));
+  const avgAbsent     = avg((hrRes.data ?? []).map((r) => r.absenteeism_rate));
+  const avgEmploy     = avg((employmentRes.data ?? []).map((r) => r.employability_rate));
+
+  const alerts  = (alertsRes.data  ?? []) as {
+    id: string; institution_id: string | null; kpi_domain: string; kpi_key: string;
+    severity: string; message: string; is_acknowledged: boolean; triggered_at: string;
+    institutions: { name: string | null; code: string | null } | null;
+  }[];
+  const uploads = (uploadsRes.data ?? []) as {
+    id: string; institution_id: string; file_name: string; domain: string;
+    status: string; created_at: string;
+    institutions: { name: string | null } | null;
+  }[];
+
+  const institutionCount = (institutionsRes.data ?? []).length;
+
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8 p-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-[#1B1C1A]">Vue d'ensemble — Réseau UCAR</h1>
-          <p className="text-sm text-slate-500 mt-0.5 capitalize"><TodayDate /></p>
+          <p className="mt-0.5 text-sm capitalize text-slate-500"><TodayDate /></p>
         </div>
-        <button className="flex items-center gap-2 bg-[#003850] text-white text-xs font-semibold uppercase tracking-wider px-4 py-2.5 rounded-sm hover:bg-[#1B4F6B] transition-colors">
-          Générer rapport
-        </button>
+        <Link
+          href="/ucar/institutions"
+          className="flex items-center gap-2 rounded-sm bg-[#003850] px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#1B4F6B]"
+        >
+          Classement établissements →
+        </Link>
       </div>
 
       {/* KPI row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiSummaryCard
-          title="Taux d'abandon"
-          value="14,2%"
-          sub="+2,1%"
-          accentColor="#BA1A1A"
-          trend="down"
-        />
-        <KpiSummaryCard
-          title="Exécution budgétaire"
-          value="88,5%"
-          sub="+5,4%"
-          accentColor="#2E7D32"
-          trend="up"
-        />
-        <KpiSummaryCard
-          title="Taux d'employabilité"
-          value="76,3%"
-          sub="0,0%"
-          accentColor="#C8A74B"
-          trend="neutral"
-        />
-        <KpiSummaryCard
-          title="Absentéisme"
-          value="8,7%"
-          sub="+1,2%"
-          accentColor="#BA1A1A"
-          trend="down"
-        />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <KpiSummaryCard title="Établissements" value={String(institutionCount)} sub="actifs" accentColor="#1B4F6B" trend="neutral" />
+        <KpiSummaryCard title="Taux de réussite" value={fmt(avgSuccess)} sub="moyenne réseau" accentColor="#2E7D32" trend={avgSuccess !== null && avgSuccess >= 70 ? "up" : "down"} />
+        <KpiSummaryCard title="Taux d'abandon"   value={fmt(avgDropout)} sub="moyenne réseau" accentColor="#BA1A1A" trend={avgDropout !== null && avgDropout < 15 ? "up" : "down"} />
+        <KpiSummaryCard title="Exéc. budget"      value={fmt(avgExecution)} sub="moyenne réseau" accentColor="#2E7D32" trend={avgExecution !== null && avgExecution >= 80 ? "up" : "down"} />
+        <KpiSummaryCard title="Employabilité"     value={fmt(avgEmploy)} sub="moyenne réseau" accentColor="#C8A74B" trend="neutral" />
+        <KpiSummaryCard title="Absentéisme"       value={fmt(avgAbsent)} sub="moyenne réseau" accentColor="#BA1A1A" trend={avgAbsent !== null && avgAbsent < 10 ? "up" : "down"} />
       </div>
 
-      {/* Alerts + Goals */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AlertsFeed alerts={ALERTS} />
-        <StrategicGoalsTracker goals={GOALS} />
+      {/* Alerts + Uploads */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Live alerts */}
+        <SectionCard title="Alertes actives" description="Dernières alertes non acquittées sur le réseau">
+          {alerts.length === 0 ? (
+            <p className="text-sm text-slate-400">Aucune alerte active.</p>
+          ) : (
+            <ul className="space-y-3">
+              {alerts.map((a) => (
+                <li key={a.id} className="flex items-start justify-between gap-3 rounded-sm border border-slate-100 p-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[#1B1C1A] truncate">
+                      {(a.institutions as { name: string | null; code: string | null } | null)?.code ?? "UCAR"} — {a.message}
+                    </p>
+                    <p className="mt-0.5 text-xs text-slate-400">{new Date(a.triggered_at).toLocaleDateString("fr-TN")}</p>
+                  </div>
+                  <SeverityBadge severity={a.severity} />
+                </li>
+              ))}
+            </ul>
+          )}
+          {alerts.length > 0 && (
+            <Link href="/ucar/alerts" className="mt-3 block text-xs text-[#003850] hover:underline">
+              Voir toutes les alertes →
+            </Link>
+          )}
+        </SectionCard>
+
+        {/* Upload activity */}
+        <UploadActivityFeed uploads={uploads.map((u) => ({
+          id: u.id,
+          institution_name: (u.institutions as { name: string | null } | null)?.name ?? "—",
+          file_name: u.file_name,
+          domain: u.domain,
+          status: u.status as "completed" | "processing" | "failed" | "pending",
+          created_at: u.created_at,
+        }))} />
       </div>
 
-      {/* Leaderboard */}
-      <InstitutionLeaderboard institutions={INSTITUTIONS} />
-
-      {/* Uploads + Reports + Announcements */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <UploadActivityFeed uploads={UPLOADS} />
-        <ReportsPanel reports={REPORTS} />
-        <AnnouncementComposer />
-      </div>
+      {/* Announcement composer */}
+      <AnnouncementComposer />
     </div>
   );
 }

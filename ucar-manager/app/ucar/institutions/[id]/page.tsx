@@ -19,7 +19,7 @@ export default async function InstitutionDetailPage({
 
   // TODO: Add KPI summary, alerts, and related module links.
   return (
-    <main className="mx-auto max-w-3xl space-y-6 p-6">
+    <main className="space-y-6 p-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-[#1B1C1A]">{institution.name}</h1>

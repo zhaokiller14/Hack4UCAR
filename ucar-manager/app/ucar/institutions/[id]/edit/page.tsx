@@ -49,7 +49,7 @@ export default async function InstitutionEditPage({ params }: InstitutionEditPag
   }
 
   return (
-    <main className="mx-auto max-w-3xl space-y-6 p-6">
+    <main className="space-y-6 p-6">
       <div>
         <h1 className="text-2xl font-semibold text-[#1B1C1A]">Modifier l'établissement</h1>
         <p className="mt-1 text-sm text-slate-500">Mettez à jour les informations institutionnelles.</p>

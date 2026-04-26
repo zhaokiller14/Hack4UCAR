@@ -93,7 +93,7 @@ export default async function UcarGoals() {
   const topYears = Object.entries(yearCounts).sort((a, b) => b[1] - a[1]);
 
   return (
-    <main className="mx-auto max-w-7xl space-y-8 p-8">
+    <main className="space-y-8 p-8">
       {/* Page header */}
       <div className="flex items-start justify-between">
         <div>
