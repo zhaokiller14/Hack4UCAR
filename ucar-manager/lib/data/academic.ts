@@ -42,6 +42,38 @@ export type AcademicKpiRow = {
   repetition_rate: number | null;
 };
 
+export type CourseRow = {
+  id: string;
+  code: string | null;
+  title: string;
+  specialization: string | null;
+  year_level: number | null;
+  credits: number | null;
+  semester: string | null;
+  academic_year: string;
+};
+
+export async function getCourses(
+  institutionId: string,
+  page: number,
+  pageSize: number,
+): Promise<{ data: CourseRow[]; total: number }> {
+  const supabase = await createClient();
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data, error, count } = await supabase
+    .from("courses")
+    .select("id, code, title, specialization, year_level, credits, semester, academic_year", { count: "exact" })
+    .eq("institution_id", institutionId)
+    .order("academic_year", { ascending: false })
+    .order("title", { ascending: true })
+    .range(from, to);
+
+  if (error) throw new Error(error.message);
+  return { data: (data ?? []) as CourseRow[], total: count ?? 0 };
+}
+
 export async function getAcademicKpis(institutionId: string): Promise<AcademicKpiRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
