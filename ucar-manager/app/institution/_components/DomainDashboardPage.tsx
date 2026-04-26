@@ -47,10 +47,15 @@ export default function DomainDashboardPage({
                 {kpi.title}
               </p>
               <div className="mt-2 flex items-end justify-between">
-                <p className="text-2xl font-semibold text-[#1B1C1A]">{kpi.value}</p>
+                <p className="text-2xl font-semibold text-[#1B1C1A]">
+                  {kpi.value}
+                </p>
                 <span
                   className="rounded-sm px-2 py-0.5 text-[11px] font-semibold"
-                  style={{ backgroundColor: `${kpi.accentColor}1A`, color: kpi.accentColor }}
+                  style={{
+                    backgroundColor: `${kpi.accentColor}1A`,
+                    color: kpi.accentColor,
+                  }}
                 >
                   {kpi.delta}
                 </span>

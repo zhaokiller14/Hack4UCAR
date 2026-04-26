@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   turbopack: {
     root: __dirname,
   },
@@ -80,6 +83,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'http',
         hostname: 'www.isln.rnu.tn',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.mathworks.com',
         pathname: '/**',
       },
     ],

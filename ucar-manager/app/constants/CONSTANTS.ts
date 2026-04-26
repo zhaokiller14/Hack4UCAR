@@ -11,7 +11,7 @@
  */
 export const INSTITUTION_LOGOS: Record<string, string> = {
   insat: "https://insat.rnu.tn/assets/images/insat_logo.png",
-  supcom: "https://www.supcom.tn/storage/app/public/coordonnees/April2025/aa8HeWk95QdtPlGED1ZY.png",
+  supcom: "https://www.mathworks.com/academia/tah-portal/supcom-31647958/_jcr_content/schoolLogo.adapt.full.medium.png/1742534172096.png",
   ept: "https://www.ept.tn/sites/default/files/logo_final_corr.png",
   enau: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyW7fxFhH975nwKAnFgHXgOdqiDTUUcAlvug&s",
   enicarthage: "http://www.enicarthage.rnu.tn/assets/images/logo.png",
@@ -26,6 +26,7 @@ export const INSTITUTION_LOGOS: Record<string, string> = {
   isban: "http://www.isban.rnu.tn/logo.png",
   islt: "http://www.islt.rnu.tn/wp-content/uploads/2020/09/logo-islt-blanc-1.png",
   isln: "http://www.isln.rnu.tn/Fr/static/fr/image/gif/islain.gif",
+  isi:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvmL7y-bkVoXMTfjyUY813mqPoDXrcr76GwQ&s"
 };
 
 /**
