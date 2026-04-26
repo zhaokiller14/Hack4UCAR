@@ -8,6 +8,7 @@ import RecordFormModal, {
 import type { SelectOption } from "@/lib/data/academic";
 import type { StudentJobInput } from "@/lib/actions/employment";
 import type { StudentJobRow } from "@/lib/data/employment";
+import { FR, t } from "@/lib/i18n";
 
 type Props = {
   rows: StudentJobRow[];
@@ -87,6 +88,11 @@ export default function EmploymentTable({
     {
       header: "Pays",
       render: (row) => countryLabel(row.job_country),
+    },
+    {
+      header: "Statut étudiant",
+      render: (row) =>
+        row.student_status ? t(FR.studentStatus, row.student_status) : "—",
     },
   ];
 

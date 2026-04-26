@@ -2,8 +2,21 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function UcarLandingPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getSession();
+      setIsAuthenticated(!!data.session);
+    };
+    checkAuth();
+  }, []);
+
   const reveal = {
     hidden: { opacity: 0, y: 18 },
     show: { opacity: 1, y: 0 },
@@ -73,7 +86,7 @@ export default function UcarLandingPage() {
           href="/ucar/dashboard"
           className="rounded px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#153e54] hover:shadow-md bg-[#1B4F6B]"
         >
-          Access Dashboard
+          {isAuthenticated ? "Access Dashboard" : "Login to UCAR"}
         </Link>
       </motion.nav>
 

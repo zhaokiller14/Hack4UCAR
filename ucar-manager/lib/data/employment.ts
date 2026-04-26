@@ -32,6 +32,7 @@ export type StudentJobRow = {
   institution_id: string;
   employment_date: string;
   job_country: string;
+  student_status: string | null;
 };
 
 export async function getStudentJobs(
@@ -45,7 +46,7 @@ export async function getStudentJobs(
 
   const { data, error, count } = await supabase
     .from("student_jobs")
-    .select("id, student_id, institution_id, employment_date, job_country", {
+    .select("id, student_id, institution_id, employment_date, job_country, student:students(status)", {
       count: "exact",
     })
     .eq("institution_id", institutionId)
@@ -54,8 +55,21 @@ export async function getStudentJobs(
 
   if (error) throw new Error(error.message);
 
+  const mapped = (data ?? []).map((row) => {
+    const studentRelation = row.student as { status?: string | null } | null;
+
+    return {
+      id: row.id,
+      student_id: row.student_id,
+      institution_id: row.institution_id,
+      employment_date: row.employment_date,
+      job_country: row.job_country,
+      student_status: studentRelation?.status ?? null,
+    };
+  });
+
   return {
-    data: (data ?? []) as StudentJobRow[],
+    data: mapped as StudentJobRow[],
     total: count ?? 0,
   };
 }
