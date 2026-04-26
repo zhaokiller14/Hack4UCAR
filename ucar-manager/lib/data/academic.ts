@@ -23,7 +23,10 @@ export async function getStudents(
 
   const { data, error, count } = await supabase
     .from("students")
-    .select("id, student_code, full_name, email, specialization, current_year, status, enrollment_date, graduation_date", { count: "exact" })
+    .select(
+      "id, student_code, full_name, email, specialization, current_year, status, enrollment_date, graduation_date",
+      { count: "exact" },
+    )
     .eq("institution_id", institutionId)
     .order("full_name", { ascending: true })
     .range(from, to);
@@ -64,7 +67,10 @@ export async function getCourses(
 
   const { data, error, count } = await supabase
     .from("courses")
-    .select("id, code, title, specialization, year_level, credits, semester, academic_year", { count: "exact" })
+    .select(
+      "id, code, title, specialization, year_level, credits, semester, academic_year",
+      { count: "exact" },
+    )
     .eq("institution_id", institutionId)
     .order("academic_year", { ascending: false })
     .order("title", { ascending: true })
@@ -74,7 +80,52 @@ export async function getCourses(
   return { data: (data ?? []) as CourseRow[], total: count ?? 0 };
 }
 
-export async function getAcademicKpis(institutionId: string): Promise<AcademicKpiRow[]> {
+export type SelectOption = {
+  id: string;
+  label: string;
+};
+
+export async function getStudentSelectOptions(
+  institutionId: string,
+): Promise<SelectOption[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("students")
+    .select("id, full_name")
+    .eq("institution_id", institutionId)
+    .order("full_name", { ascending: true });
+
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((student) => ({
+    id: student.id,
+    label: student.full_name,
+  }));
+}
+
+export async function getCourseSelectOptions(
+  institutionId: string,
+): Promise<SelectOption[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("courses")
+    .select("id, title")
+    .eq("institution_id", institutionId)
+    .order("title", { ascending: true });
+
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((course) => ({
+    id: course.id,
+    label: course.title,
+  }));
+}
+
+export async function getAcademicKpis(
+  institutionId: string,
+): Promise<AcademicKpiRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("v_academic_kpis")
