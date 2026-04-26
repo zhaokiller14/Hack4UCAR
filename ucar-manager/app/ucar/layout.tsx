@@ -1,3 +1,4 @@
+import { unstable_noStore } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { getServerUserContext } from "@/lib/auth/guards";
@@ -5,6 +6,7 @@ import { getServerUserContext } from "@/lib/auth/guards";
 import UcarSidebar from "./_components/UcarSidebar";
 
 export default async function UcarLayout({ children }: { children: React.ReactNode }) {
+  unstable_noStore();
   const userContext = await getServerUserContext();
 
   if (!userContext) {
