@@ -3,6 +3,7 @@ import { FR } from "@/lib/i18n";
 import { requireInstitutionRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { computeAndUpsertAlerts } from "@/lib/alerts/compute";
+import { getAnnouncements } from "@/lib/data/announcements";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
 import PreviewTable, { type PreviewColumn } from "@/components/institution/PreviewTable";
@@ -126,6 +127,7 @@ export default async function InstitutionDashboard() {
     { data: budgetLines }, { data: staff },
     { data: projects }, { data: jobs },
     { data: partnerships }, { data: assets },
+    announcements,
   ] = await Promise.all([
     computeAndUpsertAlerts(id, orgId),
     getAcademicKpis(id),
@@ -144,6 +146,7 @@ export default async function InstitutionDashboard() {
     getStudentJobs(id, 1, PREVIEW),
     getPartnerships(id, 1, PREVIEW),
     getInfrastructureAssets(id, 1, PREVIEW),
+    getAnnouncements(ctx.role ?? "viewer", 3),
   ]);
 
   // Fetch active alert counts
@@ -241,6 +244,31 @@ export default async function InstitutionDashboard() {
             >
               Voir les alertes →
             </Link>
+          </div>
+        )}
+
+        {/* Announcements widget */}
+        {announcements.length > 0 && (
+          <div className="rounded-sm border border-[#003850]/10 bg-white">
+            <div className="flex items-center justify-between border-b border-[#003850]/10 bg-[#FAF9F6] px-5 py-3">
+              <h3 className="text-sm font-semibold text-[#1B1C1A]">Annonces UCAR</h3>
+              <Link href="/institution/announcements" className="text-xs text-[#003850] hover:underline">
+                Voir toutes →
+              </Link>
+            </div>
+            <ul className="divide-y divide-slate-100">
+              {announcements.map((a) => (
+                <li key={a.id} className="px-5 py-4">
+                  <p className="text-sm font-medium text-[#1B1C1A]">{a.title}</p>
+                  <p className="mt-1 text-xs text-slate-500 line-clamp-2">{a.body}</p>
+                  {a.published_at && (
+                    <p className="mt-1.5 text-[11px] text-slate-400">
+                      {new Date(a.published_at).toLocaleDateString("fr-TN", { day: "2-digit", month: "long", year: "numeric" })}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 
