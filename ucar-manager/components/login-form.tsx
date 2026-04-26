@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { getRoleHomePath, isAppRole } from "@/lib/auth/roles";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -43,18 +44,23 @@ export function LoginForm({
     const supabase = createClient();
     let isMounted = true;
 
+    async function redirectByRole() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from("users").select("role").eq("id", user.id).maybeSingle();
+      const role = data?.role;
+      const path = isAppRole(role) ? getRoleHomePath(role) : null;
+      if (isMounted) router.replace(path ?? "/auth/login");
+    }
+
     supabase.auth.getSession().then(({ data }) => {
-      if (isMounted && data.session) {
-        router.replace("/ucar/dashboard");
-      }
+      if (isMounted && data.session) redirectByRole();
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        router.replace("/ucar/dashboard");
-      }
+      if (session) redirectByRole();
     });
 
     return () => {
@@ -75,9 +81,8 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      console.log("Login successful", { email });
       toast.success("Connexion reussie.");
-      router.replace("/ucar/dashboard");
+      // onAuthStateChange will fire and handle the role-based redirect
     } catch (error: unknown) {
       const message = getLoginErrorMessage(error);
       setError(message);

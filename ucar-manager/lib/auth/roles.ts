@@ -40,11 +40,11 @@ export function isInstitutionRole(role: unknown): role is InstitutionRole {
 
 export function getRoleHomePath(role: unknown): string | null {
   if (role === "super_admin") {
-    return "/";
+    return "/ucar/dashboard";
   }
 
   if (isInstitutionRole(role)) {
-    return "/";
+    return "/institution/dashboard";
   }
 
   return null;
