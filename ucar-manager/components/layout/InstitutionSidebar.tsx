@@ -18,6 +18,7 @@ import {
 	FileText,
 	Bot,
 	Upload,
+	Settings,
 	LogOut,
 } from "lucide-react";
 
@@ -40,6 +41,7 @@ const NAV = [
 	{ href: "/institution/reports", label: "Rapports", icon: FileText },
 	{ href: "/institution/upload", label: "Upload & ingestion", icon: Upload },
 	{ href: "/institution/ai-chat", label: "Assistant IA", icon: Bot },
+	{ href: "/institution/settings", label: "Paramètres", icon: Settings },
 ];
 
 type InstitutionSidebarProps = {
