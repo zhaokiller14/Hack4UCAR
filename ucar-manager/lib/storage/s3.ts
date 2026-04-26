@@ -16,17 +16,23 @@ type UploadToS3Result = {
 
 export async function uploadToS3(input: UploadToS3Input): Promise<UploadToS3Result> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  // Use service role key on server side to bypass RLS policies
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const bucket = process.env.S3_BUCKET || "documents";
   const keyPrefix = process.env.S3_KEY_PREFIX || "raw-uploads";
 
   if (!supabaseUrl || !supabaseKey) {
     throw new Error(
-      "Missing Supabase configuration. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.",
+      "Missing Supabase configuration. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
     );
   }
 
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 
   const safeFileName = input.originalFileName.replace(/[^a-zA-Z0-9._-]/g, "_");
   const key = [
@@ -51,7 +57,7 @@ export async function uploadToS3(input: UploadToS3Input): Promise<UploadToS3Resu
       throw new Error("Upload returned no data");
     }
 
-    // Build public URL
+    // Build public URL using the service role client
     const {
       data: { publicUrl },
     } = supabase.storage.from(bucket).getPublicUrl(key);

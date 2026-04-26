@@ -1,3 +1,4 @@
+import { unstable_noStore } from "next/cache";
 import { requireInstitutionRole } from "@/lib/auth/guards";
 import InstitutionSidebar from "@/components/layout/InstitutionSidebar";
 
@@ -6,6 +7,7 @@ export default async function InstitutionLayout({
 }: {
 	children: React.ReactNode;
 }) {
+	unstable_noStore();
 	const userContext = await requireInstitutionRole();
 	const roleLabel = userContext.role ?? "Utilisateur";
 
