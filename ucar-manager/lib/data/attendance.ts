@@ -9,22 +9,50 @@ export type AttendanceRow = {
   note: string | null;
 };
 
+export type AttendanceFilters = {
+  search?: string;
+  present?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
+};
+
 export async function getAttendanceRecords(
   institutionId: string,
   page: number,
   pageSize: number,
+  filters: AttendanceFilters = {},
 ): Promise<{ data: AttendanceRow[]; total: number }> {
   const supabase = await createClient();
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("attendance_records")
     .select(
       "id, student_id, course_id, session_date, present, note, courses!inner(institution_id)",
       { count: "exact" },
     )
-    .eq("courses.institution_id", institutionId)
+    .eq("courses.institution_id", institutionId);
+
+  if (filters.present !== undefined) {
+    query = query.eq("present", filters.present);
+  }
+
+  if (filters.dateFrom) {
+    query = query.gte("session_date", filters.dateFrom);
+  }
+
+  if (filters.dateTo) {
+    query = query.lte("session_date", filters.dateTo);
+  }
+
+  // Note: searching by student name requires a join — if your schema supports it,
+  // replace the note search with a students join. For now we search the note field.
+  if (filters.search?.trim()) {
+    query = query.ilike("note", `%${filters.search.trim()}%`);
+  }
+
+  const { data, error, count } = await query
     .order("session_date", { ascending: false })
     .order("student_id", { ascending: true })
     .range(from, to);

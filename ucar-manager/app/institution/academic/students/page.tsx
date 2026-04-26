@@ -9,6 +9,8 @@ import {
 import type { StudentInput } from "@/lib/actions/students";
 import StudentTable from "@/components/institution/StudentTable";
 import SectionCard from "@/components/shared/SectionCard";
+import StudentsFilterBar from "../../_components/Studentsfilterbar";
+import ExportButton from "@/components/shared/ExportButton";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -17,13 +19,26 @@ const WRITE_ROLES = new Set([
   "academic_manager",
 ]);
 
+const STATUS_OPTIONS = [
+  { value: "active", label: "Actif" },
+  { value: "graduated", label: "Diplômé" },
+  { value: "dropped", label: "Abandonné" },
+  { value: "suspended", label: "Suspendu" },
+  { value: "transferred", label: "Transféré" },
+];
+
 export default async function InstitutionStudents({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    status?: string;
+    year?: string;
+  }>;
 }) {
   const ctx = await requireInstitutionRole();
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, q, status, year } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
 
   if (!ctx.institutionId) {
@@ -36,6 +51,7 @@ export default async function InstitutionStudents({
     ctx.institutionId,
     page,
     PAGE_SIZE,
+    { search: q, status, year: year ? Number(year) : undefined },
   );
   const canWrite = WRITE_ROLES.has(ctx.role ?? "");
 
@@ -59,7 +75,7 @@ export default async function InstitutionStudents({
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-8">
+    <div className="space-y-6 p-8">
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
@@ -80,9 +96,17 @@ export default async function InstitutionStudents({
         </div>
       </div>
 
+      <StudentsFilterBar
+        statusOptions={STATUS_OPTIONS}
+        currentQ={q ?? ""}
+        currentStatus={status ?? ""}
+        currentYear={year ?? ""}
+      />
+
       <SectionCard
         title="Liste des étudiants"
         description="Triés par nom alphabétique"
+        action={<ExportButton filename="etudiants" headers={["Code","Nom complet","Email","Spécialisation","Année","Statut","Inscription","Diplôme"]} data={students.map((s) => [s.student_code ?? "",s.full_name,s.email ?? "",s.specialization ?? "",s.current_year ?? "",s.status,s.enrollment_date ?? "",s.graduation_date ?? ""])} />}
       >
         <StudentTable
           students={students}

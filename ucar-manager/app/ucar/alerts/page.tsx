@@ -2,6 +2,7 @@ import KpiSummaryCard from "../dashboard/_components/KpiSummaryCard";
 import SectionCard from "@/components/shared/SectionCard";
 import SeverityBadge from "@/components/shared/SeverityBadge";
 import { createClient } from "@/lib/supabase/server";
+import { computeAndUpsertAlerts } from "@/lib/alerts/compute";
 
 type AlertRow = {
   id: string;
@@ -27,6 +28,19 @@ function percent(part: number, total: number) {
 
 export default async function UcarAlerts() {
   const supabase = await createClient();
+
+  // Compute fresh alerts for all institutions before rendering
+  const { data: institutions } = await supabase
+    .from("institutions")
+    .select("id, organization_id");
+  if (institutions) {
+    await Promise.all(
+      institutions.map((inst) =>
+        computeAndUpsertAlerts(inst.id, inst.organization_id),
+      ),
+    );
+  }
+
   const { data, error } = await supabase
     .from("alerts")
     .select(

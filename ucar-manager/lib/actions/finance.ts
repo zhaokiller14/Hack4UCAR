@@ -76,6 +76,71 @@ export async function deleteBudgetLine(
   return {};
 }
 
+export type ExternalFundingInput = {
+  name: string;
+  source_type: string;
+  description?: string;
+  amount: number;
+  fiscal_year: string;
+};
+
+export async function createExternalFunding(
+  institutionId: string,
+  input: ExternalFundingInput,
+): Promise<{ error?: string }> {
+  await requireWriteAccess();
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("external_fundings").insert({
+    institution_id: institutionId,
+    ...sanitizeExternal(input),
+  });
+
+  if (error) return { error: error.message };
+  revalidatePath("/institution/finance");
+  return {};
+}
+
+export async function updateExternalFunding(
+  fundingId: string,
+  input: ExternalFundingInput,
+): Promise<{ error?: string }> {
+  await requireWriteAccess();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("external_fundings")
+    .update(sanitizeExternal(input))
+    .eq("id", fundingId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/institution/finance");
+  return {};
+}
+
+export async function deleteExternalFunding(
+  fundingId: string,
+): Promise<{ error?: string }> {
+  await requireWriteAccess();
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("external_fundings").delete().eq("id", fundingId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/institution/finance");
+  return {};
+}
+
+function sanitizeExternal(input: ExternalFundingInput) {
+  return {
+    name: input.name.trim(),
+    source_type: input.source_type.trim(),
+    description: input.description?.trim() || null,
+    amount: Math.max(0, Number(input.amount)),
+    fiscal_year: input.fiscal_year.trim(),
+  };
+}
+
 function sanitize(input: BudgetLineInput) {
   return {
     fiscal_year: input.fiscal_year.trim(),

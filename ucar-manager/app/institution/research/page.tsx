@@ -2,11 +2,9 @@ import { requireInstitutionRole } from "@/lib/auth/guards";
 import { getResearchKpis } from "@/lib/data/research";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
-import RawUploadCard from "@/components/institution/RawUploadCard";
 
 export default async function InstitutionResearch() {
   const { institutionId } = await requireInstitutionRole();
-  const userContext = await requireInstitutionRole();
 
   const base = getInstitutionDomainDashboard("research");
 
@@ -47,9 +45,5 @@ export default async function InstitutionResearch() {
     },
   ];
 
-  return (
-  			<><div className="mx-auto max-w-7xl px-8 pt-8">
-		  <RawUploadCard institutionId={userContext.institutionId ?? ""} defaultDomain="research" />
-	  </div><DomainDashboardPage {...base} kpis={kpis} /></>)
-  ;
+  return <DomainDashboardPage {...base} kpis={kpis} />;
 }
