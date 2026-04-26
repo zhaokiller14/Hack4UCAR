@@ -7,6 +7,10 @@ export type FinanceKpiRow = {
   total_consumed: number | null;
   execution_rate: number | null;
   cost_per_student: number | null;
+  total_external_income: number | null;
+  funding_sources_count: number | null;
+  self_financing_rate: number | null;
+  total_income: number | null;
 };
 
 export async function getFinanceKpis(
@@ -33,6 +37,37 @@ export type BudgetLineRow = {
   consumed: number;
   description: string | null;
 };
+
+export type ExternalFundingRow = {
+  id: string;
+  institution_id: string;
+  name: string;
+  source_type: string;
+  description: string | null;
+  amount: number;
+  fiscal_year: string;
+};
+
+export async function getExternalFundings(
+  institutionId: string,
+  page: number,
+  pageSize: number,
+): Promise<{ data: ExternalFundingRow[]; total: number }> {
+  const supabase = await createClient();
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data, error, count } = await supabase
+    .from("external_fundings")
+    .select("id, institution_id, name, source_type, description, amount, fiscal_year", { count: "exact" })
+    .eq("institution_id", institutionId)
+    .order("fiscal_year", { ascending: false })
+    .order("amount", { ascending: false })
+    .range(from, to);
+
+  if (error) throw new Error(error.message);
+  return { data: (data ?? []) as ExternalFundingRow[], total: count ?? 0 };
+}
 
 export async function getBudgetLines(
   institutionId: string,
