@@ -158,6 +158,19 @@ Never trust role from client — always read from Supabase session server-side.
 
 ## Database rules — READ THIS BEFORE TOUCHING THE DB
 
+### SCHEMA.md sync — mandatory
+
+`supabase/SCHEMA.md` is the shared source of truth for the database schema. Every agent and team member reads it to understand the current state of the DB.
+
+**After any migration or manual DB change, you must update SCHEMA.md to reflect it.** This includes:
+- New tables or columns → add or update the table entry
+- Renamed tables, columns, or roles → update all references
+- New or modified views → document columns and aggregation logic
+- Dropped objects → remove their entries
+- RLS policy changes → update the RLS note on the affected table
+
+Never leave SCHEMA.md stale. If a migration was applied and SCHEMA.md wasn't updated, update it before moving on.
+
 ### Never do this
 ```sql
 -- WRONG: storing a computed KPI as a column
