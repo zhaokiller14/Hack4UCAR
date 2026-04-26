@@ -14,6 +14,7 @@ import type { AttendanceInput } from "@/lib/actions/attendance";
 import AttendanceTable from "@/components/institution/AttendanceTable";
 import SectionCard from "@/components/shared/SectionCard";
 import AttendanceFilterBar from "../../_components/Attendancefilterbar";
+import ExportButton from "@/components/shared/ExportButton";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -103,6 +104,7 @@ export default async function InstitutionAttendance({
       <SectionCard
         title="Présences"
         description="Triées par date de séance décroissante"
+        action={<ExportButton filename="assiduite" headers={["Date","Présence","Note"]} data={attendance.map((r) => [r.session_date, r.present ? "Présent" : "Absent", r.note ?? ""])} />}
       >
         <AttendanceTable
           attendance={attendance}

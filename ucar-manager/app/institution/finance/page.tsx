@@ -8,6 +8,7 @@ import type { BudgetLineInput, ExternalFundingInput } from "@/lib/actions/financ
 import FinanceBudgetTable from "@/components/institution/FinanceBudgetTable";
 import ExternalFundingsTable from "@/components/institution/ExternalFundingsTable";
 import SectionCard from "@/components/shared/SectionCard";
+import ExportButton from "@/components/shared/ExportButton";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
 
@@ -96,7 +97,7 @@ export default async function InstitutionFinanceDashboard({
       <DomainDashboardPage {...base} kpis={kpis} />
 
       <div className="space-y-6 px-8 pb-8 pt-0">
-        <SectionCard title="Lignes budgétaires" description="Répartition par année fiscale et département">
+        <SectionCard title="Lignes budgétaires" description="Répartition par année fiscale et département" action={<ExportButton filename="budget" headers={["Année fiscale","Département","Catégorie","Alloué (TND)","Consommé (TND)","Description"]} data={budgetLines.map((b) => [b.fiscal_year,b.department,b.category,b.allocated,b.consumed,b.description ?? ""])} />}>
           <FinanceBudgetTable
             rows={budgetLines}
             total={total}
@@ -110,7 +111,7 @@ export default async function InstitutionFinanceDashboard({
           />
         </SectionCard>
 
-        <SectionCard title="Financements externes" description="Subventions, dons et contrats de financement">
+        <SectionCard title="Financements externes" description="Subventions, dons et contrats de financement" action={<ExportButton filename="financements-externes" headers={["Nom","Type source","Montant (TND)","Année fiscale","Description"]} data={fundings.map((f) => [f.name,f.source_type,f.amount,f.fiscal_year,f.description ?? ""])} />}>
           <ExternalFundingsTable
             rows={fundings}
             total={fundingTotal}

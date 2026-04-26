@@ -8,6 +8,7 @@ import {
 import type { PartnershipInput } from "@/lib/actions/partnerships";
 import PartnershipsTable from "@/components/institution/PartnershipsTable";
 import SectionCard from "@/components/shared/SectionCard";
+import ExportButton from "@/components/shared/ExportButton";
 import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
 
@@ -106,6 +107,7 @@ export default async function InstitutionPartnerships({
         <SectionCard
           title="Partenariats"
           description="Partenariats académiques, industriels, gouvernementaux et ONG"
+          action={<ExportButton filename="partenariats" headers={["Partenaire","Pays","Type","Actif","Début","Fin","Scope","Étudiants sortants","Étudiants entrants"]} data={partnershipsResult.data.map((p) => [p.partner_name,p.partner_country ?? "",p.type,p.is_active ? "Oui" : "Non",p.start_date ?? "",p.end_date ?? "",p.scope ?? "",p.outgoing_students,p.incoming_students])} />}
         >
           <PartnershipsTable
             rows={partnershipsResult.data}

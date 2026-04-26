@@ -10,6 +10,7 @@ import DomainDashboardPage from "../_components/DomainDashboardPage";
 import { getInstitutionDomainDashboard } from "../_components/domainData";
 import SectionCard from "@/components/shared/SectionCard";
 import EsgRecordsTable from "@/components/institution/EsgRecordsTable";
+import ExportButton from "@/components/shared/ExportButton";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -104,7 +105,7 @@ export default async function InstitutionEsg({
     <>
       <DomainDashboardPage {...base} kpis={kpis} />
       <div className="space-y-6 px-8 pb-8 pt-0">
-        <SectionCard title="Enregistrements ESG" description="Données environnementales par période">
+        <SectionCard title="Enregistrements ESG" description="Données environnementales par période" action={<ExportButton filename="esg" headers={["Période","Début","Fin","Énergie (kWh)","Eau (L)","Carbone (kg)","Déchets (kg)","Recyclés (kg)","Mobilité verte %"]} data={recordsResult.data.map((r) => [r.period_type,r.period_start,r.period_end,r.energy_kwh ?? "",r.water_liters ?? "",r.carbon_kg ?? "",r.waste_kg ?? "",r.recycled_kg ?? "",r.green_mobility_pct ?? ""])} />}>
           <EsgRecordsTable
             rows={recordsResult.data}
             total={recordsResult.total}

@@ -11,6 +11,7 @@ import {
 import type { InfrastructureAssetInput } from "@/lib/actions/infrastructure";
 import SectionCard from "@/components/shared/SectionCard";
 import InfrastructureAssetsTable from "@/components/institution/InfrastructureAssetsTable";
+import ExportButton from "@/components/shared/ExportButton";
 
 const PAGE_SIZE = 20;
 const WRITE_ROLES = new Set([
@@ -111,6 +112,7 @@ export default async function InstitutionInfrastructure({
         <SectionCard
           title="Actifs infrastructure"
           description="Salles, laboratoires, serveurs et bureaux"
+          action={<ExportButton filename="infrastructure" headers={["Nom","Type","Localisation","Capacité","Statut","Occupation %","Dernière mainten."]} data={assetsResult.data.map((a) => [a.name,a.asset_type,a.location ?? "",a.capacity ?? "",a.status,a.reported_occupancy_pct ?? "",a.last_maintenance ?? ""])} />}
         >
           <InfrastructureAssetsTable
             rows={assetsResult.data}
